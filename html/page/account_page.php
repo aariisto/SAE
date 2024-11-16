@@ -1,0 +1,274 @@
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Paramètres de Compte</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="page/css/account.css">
+   
+  
+    
+  </head>
+  <body>
+
+  <div id="overlay"></div> 
+  
+  <div id="Popup"> <!--  Pop up erreur -->
+    <span class="close-btn" onclick="removePopup()">X</span>
+    <img id="QRimage"/>
+  </div>
+
+
+    <div class="container mt-5">
+      <div class="row">
+        <!-- Colonne de gauche - Informations utilisateur -->
+        <div class="col-lg-4 col-md-12 mb-4">
+          <div class="card card-custom">
+            <div class="card-body">
+              <h3 class="section-title">Informations du Compte</h3>
+              <p><strong>Username:</strong> <?php  echo $_SESSION["nom"]; ?></p>
+              <p><strong>Email:</strong> <?php  echo $_SESSION["email"]; ?></p>
+              <p><strong>Date d'inscription:</strong> <?php  echo $_SESSION["createTime"];?></p>
+              <p><strong>Rôle:</strong> Utilisateur</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Colonne de droite - Liste de boutons -->
+        <div class="col-lg-8 col-md-12">
+          <div class="card card-custom">
+            <div class="card-body">
+              <h3 class="section-title" style="margin-bottom: 20px">
+                Historique Personnel
+              </h3>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <button class="btn btn-customHR" onclick="affichageCadreHRCH()">
+                    Historique de Recherche
+                  </button>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <button class="btn btn-customHR" onclick="affichageCadreHRES()">
+                    Historique de Réservation
+                  </button>
+                </div>
+              </div>
+
+              <!-- Ligne de séparation -->
+              <hr style="border: 1px solid #ccc; margin: 20px 0;display:none" />
+
+              <!-- Nouveau div après les boutons -->
+              <div class="col-12" id="cadreHR" style="display:none">
+                <div class="card card-custom">
+                  <div class="card-body" id="card">
+                   
+
+                    <!-- Carte-->
+
+                    </div>
+
+                    </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS (optionnel pour l'interactivité) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+       
+     
+       var searchContent = "";
+       var reservationContent = "";
+       var couleurSearch="";
+       fetch('controller/PostGetController.php', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ methode: 'get_search' }) // Envoie un JSON avec la clé "methode" et la valeur "get_search"
+})
+  .then(response => response.json())
+  .then(data => {
+    if(data.length !== 0){
+    data.forEach(item => {
+        if(item.resultat == 1){
+            couleurSearch="bi bi-check-circle-fill me-2 text-success";
+        }else{
+            couleurSearch="bi bi-x-circle-fill me-2 text-danger";
+        }
+       
+      searchContent = `
+        <div class="card mb-3 historique-item">
+          <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="card-title">${item.recherche} <i class="${couleurSearch}"></i> </h5>
+              <p class="card-text">Date de Recherche : ${item.created_at}</p>
+            </div>
+            <button class="btn btn-danger btn-sm remove-btn" data-id="${item.id}" onclick="removeSearch(this)">Supprimer</button>
+          </div>
+        </div>`+searchContent;
+    });
+
+    searchContent=`<h3 class="section-title" style="margin-bottom: 20px;">Historique de recherche</h3>`+searchContent;
+}else{
+    searchContent=`<h3 class="section-title" style="margin-bottom: 20px;">Historique de recherche</h3><p style="text-align: center;">Aucun historique de recherche disponible.</p>`;
+}
+
+
+   
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
+  function removeSearch(button) {
+    let searchContentVide="";
+  const card = button.closest(".historique-item");
+  card.remove();
+  if(document.getElementsByClassName('historique-item').length === 0){
+    searchContentVide=`<h3 class="section-title" style="margin-bottom: 20px;">Historique de recherche</h3><p style="text-align: center;">Aucun historique de recherche disponible.</p>`;
+    document.getElementById("card").innerHTML = searchContentVide;
+  }
+
+  const dataId = button.getAttribute("data-id");
+  if (dataId) {
+        // Créer un objet contenant les données à envoyer
+        const data = {
+            id_search: dataId,
+            methode:"remove_search"
+        };
+
+        // Envoyer les données via fetch (POST)
+        fetch("controller/PostGetController.php", {
+            method: "POST", 
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+        .catch(error => {
+            console.error("Erreur : ", error);
+        });
+    } else {
+        console.error("data-id non trouvé !");
+    }
+}
+
+function affichageCadreHRCH() {
+  document.getElementById("card").innerHTML = searchContent;
+  var cadre = document.getElementById("cadreHR");
+  var hr = document.querySelector('hr');
+
+  // Toggle la visibilité
+  if (cadre.style.display === "none") {
+    cadre.style.display = "block"; // Affiche la div si elle est masquée
+    hr.style.display = "block";
+  } else {
+    cadre.style.display = "none"; // Masque la div si elle est visible
+    hr.style.display = "none";
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fetch('controller/PostGetController.php', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ methode: 'get_reservation' }) // Envoie un JSON avec la clé "methode" et la valeur "get_search"
+})
+  .then(response => response.json())
+  .then(data => {
+    if(data.length !== 0){
+    data.forEach(item => {
+      
+       
+      reservationContent = `
+        <div class="card mb-3 historique-item">
+          <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="card-title">${item.station} </h5>
+              <p class="card-text">Date de Reservation : ${item.create_time}</p>
+            </div>
+            <button class="btn btn-success btn-sm remove-btn" confirmationID="${item.confirmationID}" onclick="showQR(this)">Afficher le QR Code</button>
+          </div>
+        </div>`+reservationContent;
+    });
+
+    reservationContent=`<h3 class="section-title" style="margin-bottom: 20px;">Historique de reservation</h3>`+reservationContent;
+}else{
+  reservationContent=`<h3 class="section-title" style="margin-bottom: 20px;">Historique de reservation</h3><p style="text-align: center;">Aucun historique de reservation disponible.</p>`;
+}
+
+
+   
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
+
+  function affichageCadreHRES() {
+  document.getElementById("card").innerHTML = reservationContent;
+  var cadre = document.getElementById("cadreHR");
+  var hr = document.querySelector('hr');
+
+  // Toggle la visibilité
+  if (cadre.style.display === "none") {
+    cadre.style.display = "block"; // Affiche la div si elle est masquée
+    hr.style.display = "block";
+  } else {
+    cadre.style.display = "none"; // Masque la div si elle est visible
+    hr.style.display = "none";
+  }
+}
+
+  function showQR(button) {
+    const confirmationID = button.getAttribute("confirmationID");
+    fetch(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${confirmationID}`, {
+  method: 'GET',
+})
+.then(response => response.blob())  // Convertit la réponse en un Blob
+    .then(blob => {
+      // Créer un URL pour le Blob et l'afficher dans l'élément img
+      const imageUrl = URL.createObjectURL(blob);
+      showPopup(imageUrl);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+
+
+  }
+
+  function removePopup(){
+    document.getElementById('Popup').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+    
+}
+function showPopup(imageURL) {
+            document.getElementById('QRimage').src  = imageURL; // Mettre à jour le message
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('Popup').style.display = 'block'; // Afficher le pop-up
+            
+
+            // Utiliser setTimeout pour faire disparaître le pop-up après un certain temps
+}
+    </script>
+  </body>
+</html>
