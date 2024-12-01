@@ -52,12 +52,12 @@ session_start();
               </h3>
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <button class="btn btn-customHR" onclick="affichageCadreHRCH()">
+                  <button class="btn btn-customHR" onclick='affichageCadre("getSearch")'>
                     Historique de Recherche
                   </button>
                 </div>
                 <div class="col-md-6 mb-3">
-                  <button class="btn btn-customHR" onclick="affichageCadreHRES()">
+                  <button class="btn btn-customHR" onclick='affichageCadre("getRes")'>
                     Historique de Réservation
                   </button>
                 </div>
@@ -96,6 +96,10 @@ session_start();
        var searchContent = "";
        var reservationContent = "";
        var couleurSearch="";
+       var Resa_cadre=false;
+       var Serach_cadre=false;
+       function getSearch(){
+       
        fetch('controller/PostGetController.php', {
   method: 'POST',
   headers: {
@@ -109,6 +113,7 @@ session_start();
     data.forEach(item => {
         if(item.resultat == 1){
             couleurSearch="bi bi-check-circle-fill me-2 text-success";
+            item.recherche=item.station;
         }else{
             couleurSearch="bi bi-x-circle-fill me-2 text-danger";
         }
@@ -130,14 +135,17 @@ session_start();
     searchContent=`<h3 class="section-title" style="margin-bottom: 20px;">Historique de recherche</h3><p style="text-align: center;">Aucun historique de recherche disponible.</p>`;
 }
 
-
+document.getElementById("card").innerHTML = searchContent;
+searchContent="";
    
   })
   .catch(error => {
     console.error('Error:', error);
   });
+}
 
   function removeSearch(button) {
+    
     let searchContentVide="";
   const card = button.closest(".historique-item");
   card.remove();
@@ -170,21 +178,22 @@ session_start();
     }
 }
 
-function affichageCadreHRCH() {
-  document.getElementById("card").innerHTML = searchContent;
+function affichageCadre(fonctionName) {
+  window[fonctionName]();
+  
   var cadre = document.getElementById("cadreHR");
   var hr = document.querySelector('hr');
 
-  // Toggle la visibilité
-  if (cadre.style.display === "none") {
+  
+  if (cadre.style.display === "none" ) {
     cadre.style.display = "block"; // Affiche la div si elle est masquée
     hr.style.display = "block";
-  } else {
-    cadre.style.display = "none"; // Masque la div si elle est visible
-    hr.style.display = "none";
-  }
+    Serach_cadre=true;
+  } 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function getRes(){
+ 
 fetch('controller/PostGetController.php', {
   method: 'POST',
   headers: {
@@ -214,28 +223,14 @@ fetch('controller/PostGetController.php', {
 }else{
   reservationContent=`<h3 class="section-title" style="margin-bottom: 20px;">Historique de reservation</h3><p style="text-align: center;">Aucun historique de reservation disponible.</p>`;
 }
-
-
+document.getElementById("card").innerHTML = reservationContent;
+reservationContent="";
    
   })
   .catch(error => {
     console.error('Error:', error);
   });
 
-
-  function affichageCadreHRES() {
-  document.getElementById("card").innerHTML = reservationContent;
-  var cadre = document.getElementById("cadreHR");
-  var hr = document.querySelector('hr');
-
-  // Toggle la visibilité
-  if (cadre.style.display === "none") {
-    cadre.style.display = "block"; // Affiche la div si elle est masquée
-    hr.style.display = "block";
-  } else {
-    cadre.style.display = "none"; // Masque la div si elle est visible
-    hr.style.display = "none";
-  }
 }
 
   function showQR(button) {

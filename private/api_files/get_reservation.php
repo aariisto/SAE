@@ -11,7 +11,7 @@ if (isset($_SESSION["id"]) && isset($_SESSION["token"]) && $token === $_SESSION[
     $id_client=(int)$_SESSION["id"];
 
 
-    $sql="SELECT * FROM reservations WHERE client_id='$id_client'";
+    $sql="SELECT * FROM reservations_vue WHERE client_id='$id_client'";
     $result = $conn->query($sql);
     if ($result->num_rows > 0){
         while ($row = $result->fetch_assoc()) {

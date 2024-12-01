@@ -18,11 +18,11 @@ if (isset($_SESSION["id"]) && isset($_SESSION["token"]) && $token === $_SESSION[
         $response['success'] = false;
         $response['message'] = "Échec de la connexion à la base de données";
     } else {
-        if( $station_id === 0){
+        if( $station_id === 0 ){
             $sql = "INSERT INTO recherches (client_id, recherche, resultat) VALUES ('$id', '$search', '$resultat')";
         }
         else{
-            $sql = "INSERT INTO recherches (client_id, recherche, resultat,station_id) VALUES ('$id', '$search', '$resultat','$station_id')";
+            $sql = "INSERT INTO recherches (client_id, resultat,station_id) VALUES ('$id', '$resultat','$station_id')";
         }
         if ($conn->query($sql) === TRUE ) {
             $response['success'] = true;
