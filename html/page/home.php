@@ -95,32 +95,34 @@ if (!isset($_SESSION['email'])) {
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         map.invalidateSize(); // informer Leaflet que la taille de la carte a change
 
-        // RECUPERER LES CORONNER DE USER
-        if (navigator.geolocation) { // demander au navigateure de nous envoyer les cordonner gps
-            navigator.geolocation.getCurrentPosition(
-                function(position) { // tout les donner gps de l'utilisateure sera envoyer dans position
+        // Récupérer les coordonnées de l'utilisateur
+if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coordonnées GPS
+    navigator.geolocation.getCurrentPosition(
+        function(position) { // Toutes les données GPS de l'utilisateur seront envoyées dans position
 
-                    const lat1 = position.coords.latitude; // stocker les cordonners 
-                    const lon1 = position.coords.longitude;
-           
-                    floatingMarker = L.marker([lat1, lon1], { // pour creer et afficher icone dans la map
-                        icon: L.icon({
-                        iconUrl: imageSrc,
-                        iconSize: [40, 40], // Taille de l'icône
-                        iconAnchor: [20, 10] // Ancre pour le bas de l'icône
-                
-                                })
-                    }).addTo(map).bindPopup(`<b>Votre possition actuelle</b>`).openPopup();
-                
-                loatingMarker.altValue = { lat: lat1, lng: lon1 }; // stocker les cordonner dans l'attribue altValue
-                },
-                function(error) {
-                    console.error("Erreur lors de la récupération de la position : " + error.message);
-                }
-            );
-        } else {
-        console.error("La géolocalisation n'est pas supportée par ce navigateur.");
+            const lat1 = position.coords.latitude; // Stocker la latitude
+            const lon1 = position.coords.longitude; // Stocker la longitude
+
+            // Créer et afficher l'icône sur la carte
+            floatingMarker = L.marker([lat1, lon1], { 
+                icon: L.icon({
+                    iconUrl: imageSrc, // Image de l'icône
+                    iconSize: [40, 40], // Taille de l'icône
+                    iconAnchor: [20, 10] // Point d'ancrage pour l'icône
+                })
+            }).addTo(map).bindPopup(`<b>Votre position actuelle</b>`).openPopup();
+
+            // Stocker les coordonnées dans un attribut personnalisé
+            floatingMarker.altValue = { lat: lat1, lng: lon1 }; // Stocker les coordonnées dans altValue
+        },
+        function(error) {
+            console.error("Erreur lors de la récupération de la position : " + error.message);
         }
+    );
+} else {
+    console.error("La géolocalisation n'est pas supportée par ce navigateur.");
+}
+
 
         console.log(floatingMarker) ;
 
@@ -229,7 +231,7 @@ if (!isset($_SESSION['email'])) {
                 .catch(error => console.error('Erreur lors de la récupération des données:', error));
         });
 
-
+        var affichageMessage;
         document.addEventListener("DOMContentLoaded", function () {
             // Créez une fonction pour rechercher la station
             function searchStation() {
@@ -252,13 +254,20 @@ if (!isset($_SESSION['email'])) {
                         .then(data => {
                             if (data.error) {
                                 sendData(name,false,0);
-                                showErrorPopup('<p>Station non trouvée.</p>',1400); // Message d'erreur pour l'utilisateur
+                                showErrorPopup('<p>Station / Adresse non trouvée.</p>',1400); // Message d'erreur pour l'utilisateur
                             } else {
+
+                                if (data.station_id === null) {
+                                    affichageMessage = "Localisation trouvée!";
+                                } else {
+                                    affichageMessage = "Station trouvée!";
+                                }
+
                                 sendData(name,true,data.station_id);
                                 console.log(`Latitude: ${data.lat}, Longitude: ${data.lon}`); // Affiche les coordonnées de la station
                                 map.setView([data.lat, data.lon], 16); // pour aller voir la station
                                 const marker = L.marker([data.lat, data.lon]).addTo(map)
-                                    .bindPopup(`<b>Station: ${data.name}</b>`)
+                                    .bindPopup(`<b>${affichageMessage}</b>`)
                                     .openPopup(); // faire afficher un markeur(sur lencienne markeur) pour voir quelle station et apres la supprimer
                                     setTimeout(() => {
                                         map.removeLayer(marker);
@@ -267,10 +276,10 @@ if (!isset($_SESSION['email'])) {
                             }
                         })
                         .catch(error => {
-                            showErrorPopup('<p>Station Invalide</p>',1400);
+                            showErrorPopup('<p>Station / Adresse Invalide</p>',1400);
                         });
                 } else {
-                    showErrorPopup("<p>Veuillez entrer un nom de station.</p>",1400); // Affiche le message si le champ est vide
+                    showErrorPopup("<p>Veuillez entrer un nom de station / adresse.</p>",1400); // Affiche le message si le champ est vide
                 }
             }
 

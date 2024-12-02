@@ -96,6 +96,7 @@ session_start();
        var searchContent = "";
        var reservationContent = "";
        var couleurSearch="";
+       var typeSearch="";
        var Resa_cadre=false;
        var Serach_cadre=false;
        function getSearch(){
@@ -113,16 +114,21 @@ session_start();
     data.forEach(item => {
         if(item.resultat == 1){
             couleurSearch="bi bi-check-circle-fill me-2 text-success";
+            typeSearch="bi bi-geo-alt-fill text-success icon-large";
+            if(item.recherche === null){
             item.recherche=item.station;
+            typeSearch="bi bi-bicycle icon-bike text-success";
+            }
         }else{
             couleurSearch="bi bi-x-circle-fill me-2 text-danger";
+            typeSearch="";
         }
        
       searchContent = `
         <div class="card mb-3 historique-item">
           <div class="card-body d-flex justify-content-between align-items-center">
             <div>
-              <h5 class="card-title">${item.recherche} <i class="${couleurSearch}"></i> </h5>
+              <h5 class="card-title">${item.recherche} <i class="${couleurSearch}"></i><i class="${typeSearch}"></i> </h5>
               <p class="card-text">Date de Recherche : ${item.created_at}</p>
             </div>
             <button class="btn btn-danger btn-sm remove-btn" data-id="${item.id}" onclick="removeSearch(this)">Supprimer</button>
@@ -179,6 +185,9 @@ searchContent="";
 }
 
 function affichageCadre(fonctionName) {
+  if (document.getElementById("card").innerHTML !== ""){
+    document.getElementById("card").innerHTML = "";
+  }
   window[fonctionName]();
   
   var cadre = document.getElementById("cadreHR");

@@ -60,6 +60,8 @@ def get_station_info(station_id):
 
 @app.route('/search_station/<string:name>', methods=['GET'])
 def search_station(name):
+
+
     response = requests.get("https://velib-metropole-opendata.smovengo.cloud/opendata/Velib_Metropole/station_information.json")
     if response.status_code == 200:
         stations_data = response.json()
@@ -69,13 +71,38 @@ def search_station(name):
         re.sub(r'[\s_-]+', ' ', station['name']).strip().lower() == re.sub(r'[\s_-]+', ' ', name).strip().lower()):
                 return jsonify({
                     "station_id": station['station_id'],
-                    "name": station['name'],
                     "lat": station['lat'],
                     "lon": station['lon']
                 })
+          
+     
+    nameGoogle = name.replace(' ', '+')
+    api_key = ""
+    # URL de la requête
+    url = f'https://maps.googleapis.com/maps/api/geocode/json?address={nameGoogle}&key={api_key}'
+    
+    # Faire la requête GET
+    response = requests.get(url)
+    data = response.json()
+    
+    # Vérifier si la réponse contient des résultats
+    if data['status'] == 'OK':
+        # Extraire la latitude et la longitude
+        lat = data['results'][0]['geometry']['location']['lat']
+        lng = data['results'][0]['geometry']['location']['lng']
+        return jsonify({
+                    "station_id": None ,
+                    "lat": lat,
+                    "lon": lng
+                })
+    
+          
+        
         return jsonify({"error": "Station non trouvée"})
     else:
         return jsonify({"error": f"Erreur lors de la requête"})
+    
+    
 
 
 if __name__ == '__main__':
