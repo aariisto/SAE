@@ -17,16 +17,14 @@ if ($conn->connect_error) {
 // Récupérer les données du formulaire
 
 $username = htmlspecialchars($_POST['username'], ENT_QUOTES, 'UTF-8');
-$username = $conn->escapeString($username);
 $email = htmlspecialchars($_POST['email'], ENT_QUOTES, 'UTF-8');
-$email = $conn->escapeString($email);
 $password = htmlspecialchars($_POST['password'], ENT_QUOTES, 'UTF-8');
-$password = $conn->escapeString($password);
+
 $password = password_hash($password, PASSWORD_BCRYPT); // Hash du mot de passe
 
 // Vérifier si l'utilisateur existe déjà
-$sql = "SELECT * FROM users WHERE email='$email'";
-$result = $conn->query($sql);
+
+$result = $conn->getMail($email);
 
 if ($result->num_rows > 0) {
     $_SESSION['register_error'] = true;
@@ -36,15 +34,15 @@ if ($result->num_rows > 0) {
     $_SESSION['register_error'] = false;
     
     // Insérer l'utilisateur dans la base de données
-    $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password')";
-    if ($conn->query($sql) === TRUE) {
+    $result = $conn->addUser($username,$email,$password);
+    if ($result) {
         
         $_SESSION['email'] = $email;
         $_SESSION['register'] = true;
         header('Location: /login');
         exit(); // Assurez-vous de quitter le script après la redirection
     } else {
-        echo "Erreur : " . $conn->error;
+        echo "Erreur";
     }
 }
 

@@ -232,6 +232,22 @@ class Model {
         return $stmt->get_result();
     }
 
+    public function addUser($username, $email, $password) {
+        $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+
+        // Préparer la requête
+        $stmt = $this->bd->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
+        // Liaison des paramètres
+        $stmt->bind_param("sss", $username, $email, $password);
+
+        // Exécuter la requête
+        return $stmt->execute();
+    }
+
 
     public function escapeString($string) {
         return $this->bd->real_escape_string($string);
