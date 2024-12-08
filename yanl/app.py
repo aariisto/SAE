@@ -77,7 +77,7 @@ def search_station(name):
           
      
     nameGoogle = name.replace(' ', '+')
-    api_key = ""
+    api_key = "AIzaSyDUm17xB5A406D0Z81JeCEaPT7HiWK1Qe4"
     # URL de la requête
     url = f'https://maps.googleapis.com/maps/api/geocode/json?address={nameGoogle}&key={api_key}'
     

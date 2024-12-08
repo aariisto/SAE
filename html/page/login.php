@@ -16,7 +16,7 @@ $psw_error = isset($_SESSION['psw_error']) && $_SESSION['psw_error'] === true; /
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/login.css"> <!-- Ton CSS personnalisé -->
+    <link rel="stylesheet" href="page/css/login.css"> <!-- Ton CSS personnalisé -->
 </head>
 <body>
     

@@ -14,7 +14,7 @@ $registered_error = isset($_SESSION['register_error']) && $_SESSION['register_er
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Inscription</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <link rel="stylesheet" href="css/register.css">
+        <link rel="stylesheet" href="page/css/register.css">
     </head>
 <body>
     

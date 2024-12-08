@@ -19,13 +19,11 @@ if ($conn->connect_error) {
 
 
 $email = htmlspecialchars($_POST['email'], ENT_QUOTES, 'UTF-8');
-$email = $conn->escapeString($email);
 $password = htmlspecialchars($_POST['password'], ENT_QUOTES, 'UTF-8');
-$password = $conn->escapeString($password);
 
 // Chercher l'utilisateur dans la base de données
-$sql = "SELECT * FROM users WHERE email='$email'";
-$result = $conn->query($sql);
+
+$result = $conn->getMail($email);
 
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
