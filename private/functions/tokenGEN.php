@@ -1,38 +1,29 @@
 <?php
+    require '/var/www/private/php-BIB/vendor/autoload.php';
+    use Firebase\JWT\JWT;
+function generateJWT($userId) {
 
-// Fonction pour générer un token
-function generateToken($userId) {
     // Clé secrète pour signer le token
-    $key = "didine_cacon_16"; 
+    $secretKey = 'didine_canon_16'; // Remplacez par une clé secrète sécurisée
 
-    // Générer une valeur aléatoire pour renforcer l'unicité
-    $randomValue = bin2hex(random_bytes(8)); // Générer 16 caractères hexadécimaux
+    // Temps actuel
+    $issuedAt = time();
+    // Temps d'expiration (1 heure plus tard)
+    $expirationTime = $issuedAt + 3600; // 3600 secondes = 1 heure
 
-    // Créer le payload
+    // Payload du token sans 'iss' et 'aud'
     $payload = [
-        'userId' => $userId,
-        'random' => $randomValue, // Ajouter la valeur aléatoire au payload
+        'iat' => $issuedAt,               // Temps d'émission
+        'exp' => $expirationTime,         // Temps d'expiration
+        'data' => [
+            'userId' => $userId,          // ID de l'utilisateur
+        ]
     ];
 
-    // Convertir le payload en JSON
-    $payloadJson = json_encode($payload);
+    // Générer le token
+    $jwt = JWT::encode($payload, $secretKey, 'HS256');
 
-    // Encoder le payload en base64
-    $base64Payload = base64_encode($payloadJson);
-
-    // Signer le token avec la clé secrète
-    $signature = hash_hmac('sha256', $base64Payload, $key);
-
-    // Créer le token final
-    $token = $base64Payload . '.' . $signature;
-    $conn = Model::getModel();
-    $id = (int)$_SESSION['id'];
-    $sql="UPDATE users SET token = '$token' WHERE id='" . $_SESSION['id'] . "'";
-    if ($conn->query($sql) !== TRUE) {
-        echo "Erreur ";
-    } 
-    
-
-    return $token;
+    return $jwt;
 }
+
 ?>

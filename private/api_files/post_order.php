@@ -3,7 +3,7 @@
 
 $response = []; // Crée un tableau pour la réponse
 
-if (isset($_SESSION["id"]) && isset($_SESSION["token"]) && $token === $_SESSION["token"]) {
+
 
     $confirmationID = htmlspecialchars($data['confirmationID'], ENT_QUOTES, 'UTF-8'); // Convertit les caractères spéciaux en entités HTML
     $station_id= (int)$data['station_id'];
@@ -22,14 +22,7 @@ if (isset($_SESSION["id"]) && isset($_SESSION["token"]) && $token === $_SESSION[
     $response=$conn->postOrder($confirmationID, $type, $id, $station_id);
 
        
-} else {
-    $response=[
-        'success' => false,
-        'message' => "Données manquantes."
-    ];
-}
-$token = generateToken($_SESSION['id']); //creation du token
-$_SESSION['token'] = $token;//stocket ke token
+
 echo json_encode($response); // Encode la réponse en JSON
 
 ?>

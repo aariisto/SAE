@@ -494,7 +494,7 @@ function submitSelection() {
                         </br>  <p style="margin: 0px;font-weight: bold;">***Id de confirmation: ${id_confirmation}***</p>`,4000);
                         clientReservation.confirmationID=id_confirmation;
                         clientReservation.type=bikeType;
-                        clientReservation.methode="post_order";
+                        
                         
   
 
@@ -502,6 +502,8 @@ function submitSelection() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'csrf-token': '<?php echo $_SESSION["token"]; ?>',
+            'methode' : 'post_order'
             
         },
         body: JSON.stringify(clientReservation)
@@ -531,15 +533,15 @@ function sendData(searchs,bool,staionID) {
         const data={
                 search:searchs,
                 resultat:bool,
-                station_id:staionID,
-                methode:"post_search"
+                station_id:staionID
         };
 
         fetch('controller/PostGetController.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'csrf-token': '<?php echo $_SESSION["token"]; ?>'
+                'csrf-token': '<?php echo $_SESSION["token"]; ?>',
+                'methode' : 'post_search'
             },
             body: JSON.stringify(data)
         })

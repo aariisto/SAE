@@ -104,46 +104,16 @@ session_start();
        fetch('controller/PostGetController.php', {
   method: 'POST',
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'csrf-token': '<?php echo $_SESSION["token"]; ?>',
+    'methode' : 'get_search'
   },
-  body: JSON.stringify({ methode: 'get_search' }) // Envoie un JSON avec la clé "methode" et la valeur "get_search"
 })
   .then(response => response.json())
   .then(data => {
-    if(data.length !== 0){
-    data.forEach(item => {
-        if(item.resultat == 1){
-            couleurSearch="bi bi-check-circle-fill me-2 text-success";
-            typeSearch="bi bi-geo-alt-fill text-success icon-large";
-            if(item.recherche === null){
-            item.recherche=item.station;
-            typeSearch="bi bi-bicycle icon-bike text-success";
-            }
-        }else{
-            couleurSearch="bi bi-x-circle-fill me-2 text-danger";
-            typeSearch="";
-        }
-       
-      searchContent = `
-        <div class="card mb-3 historique-item">
-          <div class="card-body d-flex justify-content-between align-items-center">
-            <div>
-              <h5 class="card-title">${item.recherche} <i class="${couleurSearch}"></i><i class="${typeSearch}"></i> </h5>
-              <p class="card-text">Date de Recherche : ${item.created_at}</p>
-            </div>
-            <button class="btn btn-danger btn-sm remove-btn" data-id="${item.id}" onclick="removeSearch(this)">Supprimer</button>
-          </div>
-        </div>`+searchContent;
-    });
 
-    searchContent=`<h3 class="section-title" style="margin-bottom: 20px;">Historique de recherche</h3>`+searchContent;
-}else{
-    searchContent=`<h3 class="section-title" style="margin-bottom: 20px;">Historique de recherche</h3><p style="text-align: center;">Aucun historique de recherche disponible.</p>`;
-}
+    document.getElementById("card").innerHTML = data.resultat;
 
-document.getElementById("card").innerHTML = searchContent;
-searchContent="";
-   
   })
   .catch(error => {
     console.error('Error:', error);
@@ -164,15 +134,16 @@ searchContent="";
   if (dataId) {
         // Créer un objet contenant les données à envoyer
         const data = {
-            id_search: dataId,
-            methode:"remove_search"
+            id_search: dataId
         };
 
         // Envoyer les données via fetch (POST)
         fetch("controller/PostGetController.php", {
             method: "POST", 
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                'csrf-token': '<?php echo $_SESSION["token"]; ?>',
+                'methode' : 'remove_search'
             },
             body: JSON.stringify(data)
         })
@@ -206,34 +177,16 @@ function getRes(){
 fetch('controller/PostGetController.php', {
   method: 'POST',
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'csrf-token': '<?php echo $_SESSION["token"]; ?>',
+    'methode' : 'get_reservation'
   },
-  body: JSON.stringify({ methode: 'get_reservation' }) // Envoie un JSON avec la clé "methode" et la valeur "get_search"
+
 })
   .then(response => response.json())
   .then(data => {
-    if(data.length !== 0){
-    data.forEach(item => {
-      
-       
-      reservationContent = `
-        <div class="card mb-3 historique-item">
-          <div class="card-body d-flex justify-content-between align-items-center">
-            <div>
-              <h5 class="card-title">${item.station} </h5>
-              <p class="card-text">Date de Reservation : ${item.create_time}</p>
-            </div>
-            <button class="btn btn-success btn-sm remove-btn" confirmationID="${item.confirmationID}" onclick="showQR(this)">Afficher le QR Code</button>
-          </div>
-        </div>`+reservationContent;
-    });
-
-    reservationContent=`<h3 class="section-title" style="margin-bottom: 20px;">Historique de reservation</h3>`+reservationContent;
-}else{
-  reservationContent=`<h3 class="section-title" style="margin-bottom: 20px;">Historique de reservation</h3><p style="text-align: center;">Aucun historique de reservation disponible.</p>`;
-}
-document.getElementById("card").innerHTML = reservationContent;
-reservationContent="";
+    
+document.getElementById("card").innerHTML = data.resultat;
    
   })
   .catch(error => {

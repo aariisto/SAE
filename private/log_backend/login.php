@@ -4,16 +4,16 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-require '/var/www/private/functions/tokenGEN.php';
+
 require '/var/www/private/Model/Model.php';
+require '/var/www/private/functions/tokenGEN.php'; 
+
+// Utiliser le namespace Firebase\JWT pour la classe JWT
+
 session_start();
 
 // Connexion à la base de données
 $conn = Model::getModel();
-
-if ($conn->connect_error) {
-    die("Connection failed");
-}
 
 // Récupérer les données du formulaire
 
@@ -36,7 +36,7 @@ if ($result->num_rows > 0) {
         $_SESSION['id'] = $user['id'];
         $_SESSION['nom'] = $user['username'];
         $_SESSION['createTime'] = $user['created_at'];// Stocker le nom d'utilisateur dans la session
-        $token = generateToken($_SESSION['id']); //creation du token
+        $token = generateJWT($_SESSION['id']); //creation du token
         $_SESSION['token'] = $token;//stocket ke token
 
         // Redirection vers la page protégée après connexion
