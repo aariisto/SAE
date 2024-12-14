@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-echo $_SESSION['id'];
+
 if (!isset($_SESSION['email'])) {
     header('Location: login');
     exit();
@@ -36,13 +36,28 @@ if (!isset($_SESSION['email'])) {
     </div>
     
     <div id="popup"> <!--  Pop up contenue -->
+    <div class="loading-lines">
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="line"></div>
+    </div>
         <div id="popupContent"> </div>
     </div>
 
-    <div id="popupInfo" style="display: none;"> <!-- Second pop-up -->
+    <div id="popupInfo"> <!-- Second pop-up -->
+    <div class="loading-lines">
+      <div class="line" style="margin: 15px;margin-bottom: 20px;"></div>
+    </div>
         <div id="popupContentInfo">
     </div>
     </div>
+
+    <div id="loading-backdrop">
+    <div>
+      <!-- Image GIF pour le chargement -->
+      <img src="page/images/spiner.gif" alt="Chargement..." width="100">
+    </div>
+  </div>
 
 
     <div id="popupRes">
@@ -76,7 +91,7 @@ if (!isset($_SESSION['email'])) {
 
 
     <script>
-        
+    
     var storedId;
 
     var clientReservation;
@@ -141,10 +156,15 @@ if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coord
                         const marker = L.marker([station.lat, station.lon]).addTo(map);// ajout de chaque station
                         marker.station_id = station.station_id; // stocker id dans attribue station_id
                         marker.bindPopup(`<b>Station: ${station.name}</b><br>Capacité: ${station.capacity}`);// afficher un 
+                        removehowLoading();
 
                         marker.on('click', function () { // sur chaque station ajouter un evenement click 
                             console.log('Station ID:', this.station_id);
-
+                            removepopInfo();
+                            showeLoadingLines();
+                            
+                            document.getElementById('popupInfo').style.display = 'block';
+                            document.getElementById('popup').style.display = 'block';
                             // Effectuer un fetch pour obtenir les détails de la station
                             fetch(`http://127.0.0.1:5000/station/${this.station_id}`) // Remplace avec l'URL de ton API Flask
                                 .then(response => {
@@ -158,6 +178,8 @@ if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coord
 
                                     // Vérifier si la station est trouvée dans les données
                                    if (data) {
+                                    
+                                    
                                     const inputMech= document.getElementById('inputMech');
                                     const inputEl= document.getElementById('inputEl');
                                     if (data.num_bikes_available_types[0].mechanical === 0) {
@@ -214,9 +236,11 @@ if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coord
         }
     }
     
+    
     document.querySelector('.submitConfirmation').classList.add('disabled');
-    document.getElementById('popupInfo').style.display = 'block'; // Afficher la fenêtre d'information
-    document.getElementById('popup').style.display = 'block'; // Afficher le popup principal
+    hideLoadingLines();
+    showpopInfo();
+    
 }
  else {
                                         console.error('Station non trouvée dans les données');
@@ -235,9 +259,8 @@ if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coord
         document.addEventListener("DOMContentLoaded", function () {
             // Créez une fonction pour rechercher la station
             function searchStation() {
+                showhowLoading();
                 const name = document.getElementById('searchInput').value.trim(); // recuperer le champs saisie dans le input text
-                
-                console.log("regr");
                 
                // envoie la variable vers le script php pour stocker chaque recherche faite sur SQL
                 
@@ -254,6 +277,7 @@ if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coord
                         .then(data => {
                             if (data.error) {
                                 sendData(name,false,0);
+                                removehowLoading();
                                 showErrorPopup('<p>Station / Adresse non trouvée.</p>',1400); // Message d'erreur pour l'utilisateur
                             } else {
 
@@ -264,11 +288,12 @@ if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coord
                                 }
 
                                 sendData(name,true,data.station_id);
-                                console.log(`Latitude: ${data.lat}, Longitude: ${data.lon}`); // Affiche les coordonnées de la station
+                                removehowLoading();
                                 map.setView([data.lat, data.lon], 16); // pour aller voir la station
                                 const marker = L.marker([data.lat, data.lon]).addTo(map)
                                     .bindPopup(`<b>${affichageMessage}</b>`)
-                                    .openPopup(); // faire afficher un markeur(sur lencienne markeur) pour voir quelle station et apres la supprimer
+                                    .openPopup();
+                                     // faire afficher un markeur(sur lencienne markeur) pour voir quelle station et apres la supprimer
                                     setTimeout(() => {
                                         map.removeLayer(marker);
                                     }, 1350);
@@ -276,9 +301,11 @@ if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coord
                             }
                         })
                         .catch(error => {
+                            removehowLoading();
                             showErrorPopup('<p>Station / Adresse Invalide</p>',1400);
                         });
                 } else {
+                    removehowLoading();
                     showErrorPopup("<p>Veuillez entrer un nom de station / adresse.</p>",1400); // Affiche le message si le champ est vide
                 }
             }
@@ -315,21 +342,28 @@ function traceRoute(depart,destination) {
         collapsible: false, // Ne pas permettre de développer/replier le panneau
         hide: true // S'assurer que le panneau de routage est caché  
     }).addTo(map);
+    removehowLoading();
 }
-
+let timeoutId; 
         // POUR AFFICHER POP D'ERREUR
-        function showErrorPopup(message,time) {
+        function showErrorPopup(message, time) {
             const errorPopup = document.getElementById('errorPopup');
             const errorMessage = document.getElementById('errorMessage');
 
-            errorMessage.innerHTML  = message; // Mettre à jour le message
-            errorPopup.style.display = 'block'; // Afficher le pop-up
+            // Si un timeout est déjà en cours, on l'annule avant de commencer un nouveau
+            if (timeoutId) {
+                 clearTimeout(timeoutId);
+            }
 
-            // Utiliser setTimeout pour faire disparaître le pop-up après un certain temps
-            setTimeout(() => {
-                errorPopup.style.display = 'none';
-            }, time); // Délai de 1350 ms avant de commencer à disparaître
+            if (message !== ""){
+            errorMessage.innerHTML = message; 
+            errorPopup.style.display = 'block'; 
         }
+            // Démarrer un nouveau setTimeout pour masquer le pop-up après un certain délai
+            timeoutId = setTimeout(() => {
+                 errorPopup.style.display = 'none';
+            }, time); // Délai avant de faire disparaître le pop-up
+}
 
         //+######################################""""   //+######################################""""
 //SCRIPT POUR PLACER MA POSITION N'IMPORTE OU DANS LA MAP
@@ -429,6 +463,7 @@ square.addEventListener('touchstart', function(event) {
 ///////////////////////////////// TERMINER /////////////////////////////////////
 
 function submitForm() {
+    showhowLoading();
     if (floatingMarker) {
         const info = document.getElementById('submitButton');
         const latt = info.getAttribute('lat');
@@ -440,6 +475,7 @@ function submitForm() {
             if (routingControl) {
                 map.removeControl(routingControl);
             }
+            removehowLoading();
             showErrorPopup('<p>Vous devez sélectionner un point de départ.</p>',1400);
             return;
         }
@@ -450,6 +486,7 @@ function submitForm() {
         document.getElementById("searchInput").value = name;
 
     } else {
+        removehowLoading();
         showErrorPopup("<p>Vous devez sélectionner un point de départ.</p>",1400);
     }
 }
@@ -480,7 +517,7 @@ function removePopupRes(){
 }
 
 function submitSelection() {
-    
+    showhowLoading();
     // Sélectionne le bouton radio coché dans le groupe "bike-type"
     const selectedBike = document.querySelector('input[name="bike-type"]:checked');
         // Récupère la valeur de l'option sélectionnée
@@ -490,6 +527,7 @@ function submitSelection() {
         inputRen()
         document.getElementById('overlay').style.display = 'none';
         const id_confirmation=Math.floor(10000 + Math.random() * 90000).toString();
+        removehowLoading();
         showErrorPopup(`<p style="margin: 0px;">Merci, votre réservation a été confirmée !</p>
                         </br>  <p style="margin: 0px;font-weight: bold;">***Id de confirmation: ${id_confirmation}***</p>`,4000);
                         clientReservation.confirmationID=id_confirmation;
@@ -552,8 +590,48 @@ function sendData(searchs,bool,staionID) {
 
 }
 
+function showhowLoading() {
+     document.getElementById('loading-backdrop').style.display = 'flex';
+     showErrorPopup("", 0);
+    
+}
 
+function removehowLoading() {
+     document.getElementById('loading-backdrop').style.display = 'none';
+    
+    }
    
+function hideLoadingLines() {
+       
+         const loadingLines = document.querySelectorAll('.loading-lines');
+
+        // Appliquer 'display: flex' à chaque élément dans la NodeList
+        loadingLines.forEach(function(loadingLine) {
+             loadingLine.style.display = 'none';
+        });
+         
+}
+
+function showeLoadingLines() {
+       
+    const loadingLines = document.querySelectorAll('.loading-lines');
+
+// Appliquer 'display: flex' à chaque élément dans la NodeList
+    loadingLines.forEach(function(loadingLine) {
+     loadingLine.style.display = 'flex';
+    });       
+       
+}
+
+function showpopInfo() {
+       document.querySelector('#popupContentInfo').style.display = 'block';
+       document.querySelector('#popupContent').style.display = 'block';
+   }
+function removepopInfo() {
+       document.querySelector('#popupContentInfo').style.display = 'none';
+       document.querySelector('#popupContent').style.display = 'none';
+   }
+
 
 
     

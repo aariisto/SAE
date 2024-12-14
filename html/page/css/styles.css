@@ -57,7 +57,7 @@ html {
   background: white; /* Fond blanc pour le pop-up */
   border: 1px solid #ccc; /* Bordure pour le pop-up */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Ombre pour le pop-up */
-  z-index: 999; /* Assurer que le pop-up est au-dessus de la carte */
+  z-index: 106; /* Assurer que le pop-up est au-dessus de la carte */
   padding: 0px; /* Espace intérieur du pop-up */
   width: 90%; /* Largeur du pop-up, ajustable */
   max-width: 400px; /* Largeur maximale pour le pop-up */
@@ -278,4 +278,57 @@ label {
   align-items: center; /* Centre le contenu */
   gap: 5px; /* Espacement entre le bouton radio et le texte */
   cursor: pointer;
+}
+
+#loading-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1007;
+}
+
+.loading-lines {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 35px; /* Espace entre les "lignes de texte" */
+}
+
+.line {
+  width: 300px;
+  height: 15px;
+  background: #e0e0e0;
+  overflow: hidden;
+  position: relative;
+}
+
+.line::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, #cccccc 0%, #e0e0e0 50%, #cccccc 100%);
+  position: absolute;
+  top: 0;
+  left: -100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: 50%;
+  }
+  100% {
+    left: 100%;
+  }
 }

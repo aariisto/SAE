@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify
 from flask_cors import CORS
 import requests
 import re
+import time
 app = Flask(__name__)
 CORS(app)
 
@@ -43,6 +44,7 @@ def get_stations():
 
 @app.route('/station/<int:station_id>', methods=['GET'])
 def get_station_info(station_id):
+    
     # Récupérer toutes les stations pour trouver celle qui correspond à station_id
     response = requests.get("https://velib-metropole-opendata.smovengo.cloud/opendata/Velib_Metropole/station_status.json")
     if response.status_code == 200:

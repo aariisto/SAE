@@ -31,6 +31,7 @@ if (!empty($response)) {
     $reservationContent = "<h3 class='section-title' style='margin-bottom: 20px;'>Historique de réservation</h3><p style='text-align: center;'>Aucun historique de réservation disponible.</p>";
 }
 
+
 // Retourner le contenu au format JSON
 echo json_encode(["resultat" => $reservationContent]);
 

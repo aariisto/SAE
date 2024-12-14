@@ -27,6 +27,12 @@ session_start();
     <img id="QRimage"/>
   </div>
 
+  <div id="loading-backdrop">
+    <div>
+      <!-- Image GIF pour le chargement -->
+      <img src="page/images/spiner.gif" alt="Chargement..." width="100">
+    </div>
+  </div>
 
     <div class="container mt-5">
       <div class="row">
@@ -71,8 +77,10 @@ session_start();
                 <div class="card card-custom">
                   <div class="card-body" id="card">
                    
+                 
 
-                    <!-- Carte-->
+                </div>
+                </div>
 
                     </div>
 
@@ -156,11 +164,9 @@ session_start();
 }
 
 function affichageCadre(fonctionName) {
-  if (document.getElementById("card").innerHTML !== ""){
-    document.getElementById("card").innerHTML = "";
-  }
-  window[fonctionName]();
-  
+
+document.getElementById("card").innerHTML = " <img src='page/images/spiner.gif' alt='Chargement...' width='100' style='display: block; margin: 0 auto;'>";
+
   var cadre = document.getElementById("cadreHR");
   var hr = document.querySelector('hr');
 
@@ -170,6 +176,7 @@ function affichageCadre(fonctionName) {
     hr.style.display = "block";
     Serach_cadre=true;
   } 
+  window[fonctionName]();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function getRes(){
@@ -186,7 +193,7 @@ fetch('controller/PostGetController.php', {
   .then(response => response.json())
   .then(data => {
     
-document.getElementById("card").innerHTML = data.resultat;
+document.getElementById("card").innerHTML =  data.resultat;
    
   })
   .catch(error => {
@@ -196,6 +203,7 @@ document.getElementById("card").innerHTML = data.resultat;
 }
 
   function showQR(button) {
+    showhowLoading();
     const confirmationID = button.getAttribute("confirmationID");
     fetch(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${confirmationID}`, {
   method: 'GET',
@@ -204,9 +212,11 @@ document.getElementById("card").innerHTML = data.resultat;
     .then(blob => {
       // Créer un URL pour le Blob et l'afficher dans l'élément img
       const imageUrl = URL.createObjectURL(blob);
+      removehowLoading();
       showPopup(imageUrl);
     })
     .catch(error => {
+      removehowLoading();
       console.error('Error:', error);
     });
 
@@ -226,6 +236,19 @@ function showPopup(imageURL) {
 
             // Utiliser setTimeout pour faire disparaître le pop-up après un certain temps
 }
+
+function showhowLoading() {
+     document.getElementById('loading-backdrop').style.display = 'flex';
+
+    
+}
+
+function removehowLoading() {
+     document.getElementById('loading-backdrop').style.display = 'none';
+    
+    }
+   
+
     </script>
   </body>
 </html>
