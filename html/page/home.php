@@ -257,58 +257,67 @@ if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coord
 
         var affichageMessage;
         document.addEventListener("DOMContentLoaded", function () {
-            // Créez une fonction pour rechercher la station
+            // Créez une fonction pour rechercher la station*
             function searchStation() {
-                showhowLoading();
-                const name = document.getElementById('searchInput').value.trim(); // recuperer le champs saisie dans le input text
-                
-               // envoie la variable vers le script php pour stocker chaque recherche faite sur SQL
-                
-                if (name) { 
-                    // Vérifier si le nom n'est pas vide
-                    fetch(`http://127.0.0.1:5000/search_station/${name}`) // retourne les information d'une station 
-                        .then(response => {
-                            // Vérifier si la réponse est correcte
-                            if (!response.ok) {
-                                throw new Error(`Erreur réseau : ${response.status}`); // Lancer une erreur si la réponse n'est pas OK
-                            }
-                            return response.json(); // Retourner le JSON
-                        })
-                        .then(data => {
-                            if (data.error) {
-                                sendData(name,false,0);
-                                removehowLoading();
-                                showErrorPopup('<p>Station / Adresse non trouvée.</p>',1400); // Message d'erreur pour l'utilisateur
-                            } else {
+    showhowLoading(); // Afficher le chargement
+    const name = document.getElementById('searchInput').value.trim(); // Récupérer le champ saisi
 
-                                if (data.station_id === null) {
-                                    affichageMessage = "Localisation trouvée!";
-                                } else {
-                                    affichageMessage = "Station trouvée!";
-                                }
+    if (name) { 
+        // Vérifier si le nom n'est pas vide
+        const data = {
+            search: name // Correction de la faute de frappe 'serach' => 'search'
+        };
 
-                                sendData(name,true,data.station_id);
-                                removehowLoading();
-                                map.setView([data.lat, data.lon], 16); // pour aller voir la station
-                                const marker = L.marker([data.lat, data.lon]).addTo(map)
-                                    .bindPopup(`<b>${affichageMessage}</b>`)
-                                    .openPopup();
-                                     // faire afficher un markeur(sur lencienne markeur) pour voir quelle station et apres la supprimer
-                                    setTimeout(() => {
-                                        map.removeLayer(marker);
-                                    }, 1350);
-
-                            }
-                        })
-                        .catch(error => {
-                            removehowLoading();
-                            showErrorPopup('<p>Station / Adresse Invalide</p>',1400);
-                        });
-                } else {
-                    removehowLoading();
-                    showErrorPopup("<p>Veuillez entrer un nom de station / adresse.</p>",1400); // Affiche le message si le champ est vide
-                }
+        fetch('controller/PostGetController.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'csrf-token': '<?php echo $_SESSION["token"]; ?>', // Assurez-vous que le token CSRF est bien injecté
+                'methode': 'post_search'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            // Si la réponse est OK, continuer à traiter les données
+            if (!response.ok) {
+                removehowLoading(); // Enlever le chargement
+                return response.json().then(errorData => {
+                    showServerError(errorData); // Gérer l'erreur uniquement ici
+                    throw new Error(errorData.error); // Lance une erreur pour interrompre le flux
+                });
             }
+            // Si la réponse est valide, retourner la réponse JSON
+            return response.json(); 
+        })
+        .then(data => {
+            removehowLoading(); // Enlever le chargement
+            if (data.lat && data.lon) {
+                // Si les données de lat/lon existent
+                map.setView([data.lat, data.lon], 16); // Déplacer la carte vers la station
+                const marker = L.marker([data.lat, data.lon]).addTo(map)
+                    .bindPopup(`<b>${data.message}</b>`) // Afficher le message dans le popup
+                    .openPopup();
+
+                // Supprimer le marqueur après un délai de 1.35 seconde
+                setTimeout(() => {
+                    map.removeLayer(marker);
+                }, 1350);
+            } else {
+                removehowLoading(); // Enlever le chargement
+                // Si les données de lat/lon sont absentes, afficher un message d'erreur
+                showErrorPopup("<p>Station / Adresse introuvable</p>", 1400);
+            }
+        })
+        .catch(error => {
+            // Affiche le message d'erreur dans la console si l'exécution échoue
+            console.error('Erreur:', error.error);
+        });          
+    } else {
+        removehowLoading(); // Enlever le chargement si le champ est vide
+        showErrorPopup("<p>Veuillez entrer un nom de station / adresse.</p>", 1400); // Afficher le message si le champ est vide
+    }
+}
+
 
             // Événement pour appuyer sur la touche "Entrée" dans le champ de recherche
             document.getElementById('searchInput').addEventListener('keypress', function (event) {
@@ -567,28 +576,7 @@ document.querySelectorAll('input[name="bike-type"]').forEach(input => {
     });
 });
 ////////////////// BACK-END FUNCTION ///////////////////////////////////////////////////////
-function sendData(searchs,bool,staionID) {
-        const data={
-                search:searchs,
-                resultat:bool,
-                station_id:staionID
-        };
 
-        fetch('controller/PostGetController.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'csrf-token': '<?php echo $_SESSION["token"]; ?>',
-                'methode' : 'post_search'
-            },
-            body: JSON.stringify(data)
-        })
-
-    .catch(error => console.error('Erreur:', error));
-
-
-
-}
 
 function showhowLoading() {
      document.getElementById('loading-backdrop').style.display = 'flex';
@@ -632,9 +620,40 @@ function removepopInfo() {
        document.querySelector('#popupContent').style.display = 'none';
    }
 
+function showServerError(erreur) {
+        showErrorPopup(erreur.error,4000);
+       if(erreur.token){
+     removeSession()
+       }
+   }
 
+   let timeoutId2; 
 
-    
+function removeSession() {
+    fetch('controller/LogController.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'methode' : 'session_destroy',
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            console.error('Erreur lors de la suppression de la session');
+        }
+    })
+    .catch(error => {
+        console.log(error); // Affiche l'erreur s'il y en a
+    });
+
+    // Après avoir envoyé la requête pour détruire la session, on attend 4 secondes avant de rediriger
+    if (timeoutId2 == null) {
+        console.log("Session en cours de suppression...");
+        timeoutId2 = setTimeout(() => {
+            window.location.href = '/login'; // Redirige vers la page de connexion après 4 secondes
+        }, 4010); // Attendre 4 secondes avant de rediriger
+    }
+}
     </script>
 </body>
 </html>

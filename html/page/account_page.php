@@ -13,7 +13,7 @@ session_start();
     />
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="page/css/account.css">
+    <link rel="stylesheet" href="page/css/account.css?v=2">
    
   
     

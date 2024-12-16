@@ -77,28 +77,27 @@ def search_station(name):
                     "lon": station['lon']
                 })
           
-     
-    nameGoogle = name.replace(' ', '+')
-    api_key = "AIzaSyDUm17xB5A406D0Z81JeCEaPT7HiWK1Qe4"
+  
+   # nameGoogle = name.replace(' ', '+')
+   # api_key = "AIzaSyDUm17xB5A406D0Z81JeCEaPT7HiWK1Qe4"
     # URL de la requête
-    url = f'https://maps.googleapis.com/maps/api/geocode/json?address={nameGoogle}&key={api_key}'
+   # url = f'https://maps.googleapis.com/maps/api/geocode/json?address={nameGoogle}&key={api_key}'
     
     # Faire la requête GET
-    response = requests.get(url)
-    data = response.json()
+  #  response = requests.get(url)
+   # data = response.json()
     
     # Vérifier si la réponse contient des résultats
-    if data['status'] == 'OK':
-        # Extraire la latitude et la longitude
-        lat = data['results'][0]['geometry']['location']['lat']
-        lng = data['results'][0]['geometry']['location']['lng']
-        return jsonify({
-                    "station_id": None ,
-                    "lat": lat,
-                    "lon": lng
-                })
-    
-          
+   # if data['status'] == 'OK':
+   #     # Extraire la latitude et la longitude
+   #     lat = data['results'][0]['geometry']['location']['lat']
+   #     lng = data['results'][0]['geometry']['location']['lng']
+   #     return jsonify({
+   # #                "station_id": None ,
+      #              "lat": lat,
+    #                "lon": lng
+   #             })
+  
         
         return jsonify({"error": "Station non trouvée"})
     else:
