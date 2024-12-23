@@ -15,7 +15,7 @@ $input = file_get_contents("php://input"); // Récupère les données envoyées
 $data = json_decode($input, true); // Décode les données JSON
 
 // Vérifie que la méthode et les paramètres sont corrects
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($headers['methode']) 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($headers['methode']) 
         && isset($_SESSION['id']) && isset($_SESSION['token']) && verifyJWT($headers['csrf-token'],$_SESSION['id'])) {
 
     $allowed_methods = ["post_search", "post_order","get_search","remove_search","get_reservation"]; // Liste des méthodes autorisées

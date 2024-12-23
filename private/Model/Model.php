@@ -8,7 +8,7 @@ class Model {
      */
     private function __construct() {
         // Connexion à la base de données
-        $this->bd = new mysqli('localhost', 'root', 'yannel', 'user');
+        $this->bd = new mysqli('localhost', 'user_velib', 'saevelib', 'user');
 
         // Vérifiez la connexion
         if ($this->bd->connect_error) {
