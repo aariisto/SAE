@@ -101,7 +101,7 @@ def search_station(name):
         
         return jsonify({"error": "Station non trouvée"})
     else:
-        return jsonify({"error": f"Erreur lors de la requête"})
+        return jsonify({"error": "Erreur lors de la requête"}), response.status_code
     
     
 

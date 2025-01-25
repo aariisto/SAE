@@ -7,15 +7,21 @@ class Model {
      * Constructeur créant l'objet mysqli et l'affectant à $bd
      */
     private function __construct() {
+          // Activer le mode exceptions pour mysqli
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    try {
         // Connexion à la base de données
-        $this->bd = new mysqli('localhost', 'user_velib', 'saevelib', 'user');
-
-        // Vérifiez la connexion
-        if ($this->bd->connect_error) {
-            die("Connection failed: " . $this->bd->connect_error);
-        }
-
+        $this->bd = new mysqli('localhost', 'root', 'yannel', 'user');
         $this->bd->set_charset('utf8'); // Définir l'encodage
+    } catch (mysqli_sql_exception $e) {
+        // Gérer l'exception et renvoyer un JSON personnalisé
+        throw new Exception(json_encode([
+            "error" => "Le serveur n'a pas pu traiter votre demande. Veuillez réessayer ultérieurement.",
+            "error_code" => "erreur code: 3_0",
+            "token" => false
+        ]));
+    }
     }
 
     /**
@@ -34,6 +40,7 @@ class Model {
         return $this->bd->query($sql);
     }
 
+
     public function postSearch($id,$search,$station_id,$resultat){
 
         if ($station_id === 0) {
@@ -41,39 +48,41 @@ class Model {
         } else {
             $sql = "INSERT INTO recherches (client_id, resultat, station_id) VALUES (?, ?, ?)";
         }
-    
-        // Préparer la requête
-        $stmt = $this->bd->prepare($sql);
-    
-        // Vérification si la préparation a réussi
-        if (!$stmt) {
-            return [
-                'success' => false,
-                'message' => "Erreur de préparation de la requête"
-            ];
+
+        try {
+            $stmt = $this->bd->prepare($sql);
+        } catch (mysqli_sql_exception $e) {
+            throw new Exception(json_encode([
+            "error" => "Le serveur n'a pas pu traiter votre demande. Veuillez réessayer ultérieurement.",
+            "error_code" => "erreur code: 3_1",
+            "token" => false
+            ]));
+            exit();
         }
-    
-        // Lier les paramètres
-        if ($station_id === 0) {
+
+       
+            if ($station_id === 0) {
             $stmt->bind_param("isi", $id, $search, $resultat); // "i" pour entier, "s" pour chaîne
-        } else {
+            } else {
             $stmt->bind_param("iii", $id, $resultat, $station_id); // "i" pour entier, "s" pour chaîne
+            }
+       
+        try {
+            $stmt->execute();
+        } catch (mysqli_sql_exception $e) {
+            throw new Exception(json_encode([
+            "error" => "Le serveur n'a pas pu traiter votre demande. Veuillez réessayer ultérieurement.",
+            "error_code" => "erreur code: 3_2",
+            "token" => false
+            ]));
+            exit();
         }
-    
-        // Exécuter la requête
-        if (!$stmt->execute()) {
-            return [
-                'success' => false,
-                'message' => "Erreur lors de l'insertion"
-            ];
-        }
-    
+
         // Retourner le succès
         return [
             'success' => true,
             'message' => "Recherche insérée avec succès : client_id = $id, recherche = $search"
         ];
-        
         
     }
 
@@ -81,30 +90,34 @@ class Model {
 
         $sql = "INSERT INTO reservations (confirmationID, id_velo, client_id, station_id) VALUES (?, ?, ?, ?)";
 
-        // Préparer la requête
-        $stmt = $this->bd->prepare($sql);
-        if (!$stmt) {
-            return [
-                'success' => false,
-                'message' => "Erreur de préparation de la requête"
-            ];
+        try {
+            $stmt = $this->bd->prepare($sql);
+        } catch (mysqli_sql_exception $e) {
+            throw new Exception(json_encode([
+            "error" => "Le serveur n'a pas pu traiter votre demande. Veuillez réessayer ultérieurement.",
+            "error_code" => "erreur code: 3_1",
+            "token" => false
+            ]));
+            exit();
         }
 
-        // Liaison des paramètres
         $stmt->bind_param("iiii", $confirmationID, $type, $id, $station_id);
 
-        // Exécuter la requête
-        if ($stmt->execute()) {
-            return [
-                'success' => true,
-                'message' => "Réservation insérée avec succès : client_id = $id, confirmationID = $confirmationID"
-            ];
-        } else {
-            return [
-                'success' => false,
-                'message' => "Erreur lors de l'insertion : " . $stmt->error
-            ];
+        try {
+            $stmt->execute();
+        } catch (mysqli_sql_exception $e) {
+            throw new Exception(json_encode([
+            "error" => "Le serveur n'a pas pu traiter votre demande. Veuillez réessayer ultérieurement.",
+            "error_code" => "erreur code: 3_2",
+            "token" => false
+            ]));
+            exit();
         }
+
+        return [
+            'success' => true,
+            'message' => "Réservation insérée avec succès : client_id = $id, confirmationID = $confirmationID"
+        ];
     }
 
     public function removeSearch($id_search) {
@@ -179,40 +192,44 @@ class Model {
     
     public function getOrder($id_client) {
     
-        // Requête SQL préparée
-        $sql = "SELECT * FROM reservations_vue WHERE client_id = ?";
+        $responses = []; // Tableau pour stocker les résultats combinés
 
-        // Préparer la requête
-        $stmt = $this->bd->prepare($sql);
-        if (!$stmt) {
-            return [
-                'success' => false,
-                'message' => "Erreur de préparation de la requête"
-            ];
-        }
+    // Première requête pour id_velo = 1
+    $sql1 = "SELECT * FROM reservations_vue WHERE client_id = ? AND id_velo = 1;";
+    $stmt1 = $this->bd->prepare($sql1);
+    if (!$stmt1) {
+        return [
+            'success' => false,
+            'message' => "Erreur de préparation de la première requête"
+        ];
+    }
+    $stmt1->bind_param("i", $id_client);
+    $stmt1->execute();
+    $result1 = $stmt1->get_result();
+    $responses = array_merge($responses, $result1->fetch_all(MYSQLI_ASSOC));
+    $stmt1->close();
 
-        // Liaison des paramètres
-        $stmt->bind_param("i", $id_client);
+    // Deuxième requête pour id_velo = 2
+    $sql2 = "SELECT * FROM reservations_vue WHERE client_id = ? AND id_velo = 2;";
+    $stmt2 = $this->bd->prepare($sql2);
+    if (!$stmt2) {
+        return [
+            'success' => false,
+            'message' => "Erreur de préparation de la deuxième requête"
+        ];
+    }
+    $stmt2->bind_param("i", $id_client);
+    $stmt2->execute();
+    $result2 = $stmt2->get_result();
+    $responses = array_merge($responses, $result2->fetch_all(MYSQLI_ASSOC));
+    $stmt2->close();
 
-        // Exécuter la requête
-        if (!$stmt->execute()) {
-            return [
-                'success' => false,
-                'message' => "Erreur lors de l'exécution de la requête"
-            ];
-        }
+    // Trier les résultats combinés par `create_time` (plus petit au plus grand)
+    usort($responses, function ($a, $b) {
+        return strtotime($a['create_time']) <=> strtotime($b['create_time']);
+    });
 
-        // Récupérer les résultats
-        $result = $stmt->get_result();
-        $response = [];
-        // Vérifier les lignes trouvées
-        if ( $result->num_rows > 0) {
-            
-            while ($row = $result->fetch_assoc()) {
-                $response[] = $row;
-            }
-        }
-        return $response;
+        return $responses;
     }
 
     public function getMail($email){

@@ -1,6 +1,6 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
 error_reporting(E_ALL);
 
 require '/var/www/private/Model/Model.php';
@@ -29,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($headers['methode'])
     }
 } else {
     // Réponse d'erreur si l'action est invalide
-    http_response_code(400); // Erreur 400 : Mauvaise requête
-    echo json_encode(["error" => "Votre session a expiré. Veuillez vous reconnecter.","token"=> true]);
+    http_response_code(401); // Erreur 400 : Mauvaise requête
+    echo json_encode(["error" => "Votre session a expiré. Veuillez vous reconnecter.","error_code"=> "erreur code: 1","token"=> true]);
     exit();
 }
 ?>

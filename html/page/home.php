@@ -146,7 +146,9 @@ if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coord
         fetch('http://127.0.0.1:5000/stations')  // L'URL est relative à la base de l'application Flask
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Erreur réseau : ' + response.status);
+                    return response.json().then((errorData) => {
+                    throw errorData;
+  });
                 }
                     return response.json(); // convertit -> objet
                 })
@@ -252,7 +254,12 @@ if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coord
                         });
                     });
                 })
-                .catch(error => console.error('Erreur lors de la récupération des données:', error));
+                .catch((error) => {
+                removehowLoading();
+                document.getElementById('overlay').style.display = 'block';
+                showErrorPopup("<p>Le serveur n'a pas pu traiter votre demande. Veuillez réessayer ultérieurement.</p>", "infinite");
+                console.error("Erreur:", error.error || error);
+                });
         });
 
         var affichageMessage;
@@ -268,7 +275,7 @@ if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coord
             search: name // Correction de la faute de frappe 'serach' => 'search'
         };
 
-        fetch('controller/PostGetController.php', {
+        fetch('/requete/post_get', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -280,11 +287,11 @@ if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coord
         .then(response => {
             // Si la réponse est OK, continuer à traiter les données
             if (!response.ok) {
-                removehowLoading(); // Enlever le chargement
-                return response.json().then(errorData => {
-                    showServerError(errorData); // Gérer l'erreur uniquement ici
-                    throw new Error(errorData.error); // Lance une erreur pour interrompre le flux
-                });
+                    return response.json().then(errorData => {
+                         
+                     throw errorData;
+                    });
+
             }
             // Si la réponse est valide, retourner la réponse JSON
             return response.json(); 
@@ -309,8 +316,14 @@ if (navigator.geolocation) { // Demander au navigateur de nous envoyer les coord
             }
         })
         .catch(error => {
-            // Affiche le message d'erreur dans la console si l'exécution échoue
-            console.error('Erreur:', error.error);
+            if (!error.error) {
+                removehowLoading();
+                console.error('Erreur:1', error);
+                return;
+            }
+            removehowLoading();
+            showServerError(error); // Gérer l'erreur uniquement ici
+            console.error('Erreur:', error.error_code);
         });          
     } else {
         removehowLoading(); // Enlever le chargement si le champ est vide
@@ -368,7 +381,9 @@ let timeoutId;
             errorMessage.innerHTML = message; 
             errorPopup.style.display = 'block'; 
         }
-            // Démarrer un nouveau setTimeout pour masquer le pop-up après un certain délai
+            if(time === "infinite"){
+                return;
+            }
             timeoutId = setTimeout(() => {
                  errorPopup.style.display = 'none';
             }, time); // Délai avant de faire disparaître le pop-up
@@ -545,7 +560,7 @@ function submitSelection() {
                         
   
 
-                        fetch('controller/PostGetController.php', {
+                        fetch('requete/post_get', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -555,9 +570,24 @@ function submitSelection() {
         },
         body: JSON.stringify(clientReservation)
     })
-    
+    .then((response) => { 
+    // Si la réponse est OK, continuer à traiter les données
+    if (!response.ok) {
+      return response.json().then((errorData) => {
+        throw errorData;
+      });
+    }
+
+  })
     .catch(error => {
-        console.error('Erreur:', error);
+        if (!error.error) {
+      removehowLoading();
+      console.error("Erreur:", error);
+      return;
+    }
+    removehowLoading();
+    showServerError(error); // Gérer l'erreur uniquement ici
+    console.error("Erreur:", error.error_code);
     });
 }
 
@@ -623,7 +653,7 @@ function removepopInfo() {
 function showServerError(erreur) {
         showErrorPopup(erreur.error,4000);
        if(erreur.token){
-     removeSession()
+     // removeSession()
        }
    }
 
