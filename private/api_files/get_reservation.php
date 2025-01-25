@@ -7,6 +7,7 @@ $id_client = (int)$_SESSION["id"];
 $conn = Model::getModel();
 $response = $conn->getOrder($id_client);  // Récupère les commandes ou réservations
 
+
 $reservationContent = "";  // Initialiser le contenu des réservations
 
 // Vérifier si la réponse contient des données

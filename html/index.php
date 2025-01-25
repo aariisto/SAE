@@ -1,6 +1,6 @@
 <?php
 // Récupère l'URI de la requête
-$request = $_SERVER['REQUEST_URI'];
+$request = $_SERVER['REQUEST_URI']; // bvfhddfihl
 
 // Routeur simple basé sur l'URI
 switch ($request) {
@@ -24,6 +24,14 @@ switch ($request) {
         // Redirige vers la page account_page.php
         include 'page/account_page.php';
         break;
+    case '/requete/post_get':
+            // Appelle le contrôleur LoginController
+            include 'controller/PostGetController.php';
+            break;
+    case '/requete/log':
+            // Appelle le contrôleur LoginController
+            include 'controller/LogController.php';
+            break;
     default:
         // Si la route n'existe pas, afficher une page 404
         http_response_code(404);

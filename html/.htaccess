@@ -5,6 +5,8 @@ RewriteRule ^home$ index.php [L]
 RewriteRule ^login$ index.php [L]
 RewriteRule ^register$ index.php [L]
 RewriteRule ^account$ index.php [L]
+RewriteRule ^requete/post_get$ index.php [L]
+RewriteRule ^requete/log$ index.php [L]
 
 # Si aucune règle ne correspond, afficher 404
 RewriteCond %{REQUEST_FILENAME} !-f

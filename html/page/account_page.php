@@ -109,7 +109,7 @@ session_start();
        var Serach_cadre=false;
        function getSearch(){
        
-       fetch('controller/PostGetController.php', {
+      fetch('requete/post_get', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -146,7 +146,7 @@ session_start();
         };
 
         // Envoyer les données via fetch (POST)
-        fetch("controller/PostGetController.php", {
+        fetch("requete/post_get", {
             method: "POST", 
             headers: {
                 "Content-Type": "application/json",
@@ -181,7 +181,7 @@ document.getElementById("card").innerHTML = " <img src='page/images/spiner.gif' 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function getRes(){
  
-fetch('controller/PostGetController.php', {
+fetch('requete/post_get', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',

@@ -30,7 +30,7 @@ $registered_error = isset($_SESSION['register_error']) && $_SESSION['register_er
                 $_SESSION['register_error'] = false; // Change la valeur de la session
             }
             ?>
-            <form action="controller/LogController.php" method="POST" class="mt-4">
+            <form action="requete/log" method="POST" class="mt-4">
                 <div class="form-group">
                     <label for="username">Nom d'utilisateur :</label>
                     <input type="text" class="form-control" id="username" name="username" required>

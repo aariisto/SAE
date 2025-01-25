@@ -49,7 +49,7 @@ $psw_error = isset($_SESSION['psw_error']) && $_SESSION['psw_error'] === true; /
             
             ?>
             
-            <form action="controller/LogController.php" method="POST" class="mt-4">
+            <form action="requete/log" method="POST" class="mt-4">
                 <div class="form-group">
                     <label for="username">Adresse mail :</label>
                     <input type="email" class="form-control" id="username" name="email" required>
