@@ -55,7 +55,7 @@ def get_station_info(station_id):
         if station_info:
             return jsonify(station_info)
         else:
-            return jsonify({"error": "Station non trouvée"}), 404
+            return jsonify(None)
     else:
         return jsonify({"error": f"Erreur lors de la requête: {response.status_code}"}), response.status_code
 
