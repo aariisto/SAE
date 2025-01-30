@@ -63,14 +63,11 @@ def get_station_info(station_id):
 @app.route('/search_station/<string:name>', methods=['GET'])
 def search_station(name):
 
-
     response = requests.get("https://velib-metropole-opendata.smovengo.cloud/opendata/Velib_Metropole/station_information.json")
     if response.status_code == 200:
         stations_data = response.json()
         for station in stations_data['data']['stations']:
-          if (station['name'].lower() == name.lower() or 
-        re.sub(r'[-_]+', ' ', station['name']).strip().lower() == re.sub(r'[-_]+', ' ', name).strip().lower() or 
-        re.sub(r'[\s_-]+', ' ', station['name']).strip().lower() == re.sub(r'[\s_-]+', ' ', name).strip().lower()):
+          if (re.sub(r'[\s_-]+', ' ', name).strip().lower() == re.sub(r'[\s_-]+', ' ', station['name']).strip().lower()):
                 return jsonify({
                     "station_id": station['station_id'],
                     "lat": station['lat'],
