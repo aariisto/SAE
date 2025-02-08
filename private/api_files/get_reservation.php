@@ -18,12 +18,22 @@ $reservationContent = "";  // Initialiser le contenu des réservations
 // Vérifier si la réponse contient des données
 if (!empty($response)) {
     foreach ($response as $item) {
+        // Déterminer l'icône en fonction de id_velo
+        if ($item['id_velo'] == 1) {
+            $veloIcon = "<i class='bi bi-battery-charging' title='Vélo Électrique'></i>"; // Icône vélo électrique
+        } elseif ($item['id_velo'] == 2) {
+            $veloIcon = "<i class='bi bi-bicycle' title='Vélo Mécanique'></i>"; // Icône vélo mécanique
+        } else {
+            $veloIcon = "<i class='bi bi-exclamation-triangle text-danger' title='Erreur'></i>"; // Icône d'erreur
+        }
+
+        // Génération du contenu de la réservation
         $reservationContent = "
             <div class='card mb-3 historique-item'>
                 <div class='card-body d-flex justify-content-between align-items-center'>
                     <div>
-                        <h5 class='card-title'>{$item['station']}</h5>
-                        <p class='card-text'>Date de Reservation : {$item['create_time']}</p>
+                        <h5 class='card-title'> {$item['station']} {$veloIcon}</h5>
+                        <p class='card-text'>Date de Réservation : {$item['create_time']}</p>
                     </div>
                     <button class='btn btn-success btn-sm remove-btn' confirmationID='{$item['confirmationID']}' onclick='showQR(this)'>Afficher le QR Code</button>
                 </div>
