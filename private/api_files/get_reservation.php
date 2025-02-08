@@ -4,9 +4,14 @@ $response = []; // Crée un tableau pour la réponse
 
 $id_client = (int)$_SESSION["id"];
 
-$conn = Model::getModel();
-$response = $conn->getOrder($id_client);  // Récupère les commandes ou réservations
-
+try {
+    $conn = Model::getModel(); // Obtenir la connexion à la base de données
+    $response = $conn->getOrder($id_client);  // Récupère les commandes ou réservations
+} catch (Exception $e) {
+    http_response_code(500); // Erreur 500 : Probleme du serveur
+    echo $e->getMessage();
+    exit();
+}
 
 $reservationContent = "";  // Initialiser le contenu des réservations
 

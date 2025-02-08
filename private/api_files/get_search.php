@@ -2,9 +2,14 @@
 
 $id_client = (int)$_SESSION["id"];
 
+try {
 $conn = Model::getModel();
 $response = $conn->getSearch($id_client);
-
+} catch (Exception $e) {
+    http_response_code(500); // Erreur 500 : Probleme du serveur
+    echo $e->getMessage();
+    exit();
+}
 $searchContent = ""; // Initialiser $searchContent à une chaîne vide
 
 if (! empty($response)) {
