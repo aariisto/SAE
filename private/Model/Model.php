@@ -156,7 +156,18 @@ class Model {
      * Récupère des reservations pour un client spécifique.
      *
      * @param int $id_client L'ID du client.
-     * @return array Les détails de la commande associés au client spécifié.
+     * @return array Un tableau associatif contenant les résultats de la recherche.
+     *               - `id` (int) : L'identifiant unique de la recherche.
+     *               - `client_id` (int) : L'identifiant du client associé à la recherche.
+     *               - `id_velo` (int) : L'identifiant du vélo concerné(type).
+     *               - `station_id` (int) : L'identifiant de la station de vélo.
+     *               - `station` (string) : Le nom de la station associée.
+     *               - `confirmationID` (string) : L'identifiant de confirmation de la recherche.
+     *               - `create_time` (string) : La date et l'heure de création de la recherche (format YYYY-MM-DD HH:MM:SS).
+     *               - `lat` (float) : La latitude de l'emplacement de la recherche.
+     *               - `lon` (float) : La longitude de l'emplacement de la recherche.
+     *               - `type` (string) : Le type de velo .
+     *                 Ou bien Null si ya pas de resultat
      *  @throws Exception Si une erreur survient lors de la préparation ou de l'exécution de la requête SQL.
      */
     public function getOrder($id_client) {
@@ -247,7 +258,17 @@ class Model {
      * associées à un client spécifique à partir de la vue `recherches_vue`.
      *
      * @param int $id_client L'identifiant du client pour lequel récupérer les recherches.
-     * @return array Un tableau contenant les résultats de la recherche. Si une erreur survient,
+     * @return array Un tableau associatif contenant les résultats de la recherche.
+     *               - `id` (int) : L'identifiant unique de la recherche.
+     *               - `client_id` (int) : L'identifiant du client qui a effectué la recherche.
+     *               - `station_id` (int) : L'identifiant de la station associée à la recherche.
+     *               - `recherche` (string) : Le texte ou la requête de recherche effectuée.
+     *               - `created_at` (string) : La date et l'heure de création de la recherche (format YYYY-MM-DD HH:MM:SS).
+     *               - `resultat` (string) : Le résultat obtenu suite à la recherche.
+     *               - `lat` (float) : La latitude de l'emplacement de la recherche.
+     *               - `lon` (float) : La longitude de l'emplacement de la recherche.
+     *               - `station` (string) : Le nom de la station associée à la recherche.
+     *                Ou bien Null si ya pas de resultat
      * @throws Exception Si une erreur survient lors de la préparation ou de l'exécution de la requête SQL.
      */
     public function getSearch($id_client) {
@@ -342,7 +363,7 @@ class Model {
      * Récupère les informations d'un utilisateur en fonction de son adresse e-mail.
      *
      * @param string $email L'adresse e-mail de l'utilisateur.
-     * @return mysqli_result Le résultat de la requête contenant les informations de l'utilisateur.
+     * @return mysqli_result|false Un objet `mysqli_result` contenant le résultat de la requête, ou `false` en cas d'échec.
      * @throws Exception Si une erreur survient lors de la préparation ou de l'exécution de la requête SQL.
      */
     public function getMail($email) {

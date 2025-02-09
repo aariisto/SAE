@@ -1,16 +1,37 @@
 <?php
 
+/**
+ * Ce script PHP gère la récupération et l'affichage de l'historique de reservation d'un client.
+ * 
+ * Entrée:
+ * - $_SESSION["id"] : Identifiant du client stocké dans la session.
+ * 
+ * Sortie:
+ * - Réponse JSON avec du contenu HTML de l'historique de recherche.
+ * 
+ * Erreurs:
+ * - 400 Session invalide si l'ID du client n'est pas présent dans la session.
+ * - 500 Problème du serveur lors de la connexion à la base de données ou de la récupération des données.
+ */
+
+// Vérifie si la session est valide
+if (!isset($_SESSION["id"])) {
+    http_response_code(400); // Code de réponse 400 pour une mauvaise requête
+    echo json_encode(["error" => "Session invalide"]);
+    exit();
+}
+
 $response = []; // Crée un tableau pour la réponse
 
-$id_client = (int)$_SESSION["id"];
+$id_client = (int)$_SESSION["id"]; // Récupère l'ID du client depuis la session
 
 try {
     $conn = Model::getModel(); // Obtenir la connexion à la base de données
-    $response = $conn->getOrder($id_client);  // Récupère les commandes ou réservations
+    $response = $conn->getOrder($id_client);  // Récupère les commandes ou réservations du client
 } catch (Exception $e) {
-    http_response_code(500); // Erreur 500 : Probleme du serveur
-    echo $e->getMessage();
-    exit();
+    http_response_code(500); // Erreur 500 : Problème du serveur
+    echo $e->getMessage(); // Affiche le message d'erreur
+    exit(); // Arrête l'exécution du script
 }
 
 $reservationContent = "";  // Initialiser le contenu des réservations
@@ -37,7 +58,7 @@ if (!empty($response)) {
                     </div>
                     <button class='btn btn-success btn-sm remove-btn' confirmationID='{$item['confirmationID']}' onclick='showQR(this)'>Afficher le QR Code</button>
                 </div>
-            </div>" . $reservationContent;
+            </div>" . $reservationContent; // Ajouter la nouvelle réservation au début du contenu
     }
 
     // Ajouter un titre au contenu des réservations
@@ -47,9 +68,7 @@ if (!empty($response)) {
     $reservationContent = "<h3 class='section-title' style='margin-bottom: 20px;'>Historique de réservation</h3><p style='text-align: center;'>Aucun historique de réservation disponible.</p>";
 }
 
-
 // Retourner le contenu au format JSON
 echo json_encode(["resultat" => $reservationContent]);
 
 ?>
-
