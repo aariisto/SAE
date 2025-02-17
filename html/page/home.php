@@ -2,7 +2,7 @@
 session_start();
 
 
-if (!isset($_SESSION['email'])) {
+if (!isset($_SESSION['id'])  || !isset($_SESSION['token'])) {
     header('Location: login');
     exit();
 }
@@ -15,21 +15,48 @@ if (!isset($_SESSION['email'])) {
     <title>Carte des stations Vélib'</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" /> <!-- Ajout de la feuille de style du géocodeur -->
     <link rel="stylesheet" href="page/css/styles.css"> <!-- Lien vers le fichier CSS externe -->
+    
 </head>
 <body>
     
     <div id="map"></div> <!-- Conteneur pour la carte -->
-        <div id="topRightSquare"><img src="page/images/personnes.png" id="clickableImage"> 
+
+<!-- ✅ Conteneur principal qui aligne les trois éléments -->
+<div class="header-container">
+    
+    <!-- ✅ Icône paramètres (gauche) -->
+    <div id="leftBox" onclick="toggleMenu()">
+        <i class="fas fa-user-cog"></i>
+    </div>
+
+    <!-- ✅ Barre de recherche (centre) -->
+    <div id="searchBar">
+        <input type="text" id="searchInput" placeholder="Rechercher une station..."/>
+    </div>
+
+    <!-- ✅ Icône utilisateur (droite) -->
+    <div id="topRightSquare">
+        <img src="page/images/personnes.png" id="clickableImage">
+    </div>
+
+</div>
+
+
+
+    <!-- ✅ Menu déroulant -->
+    <div id="dropdownMenu">
+        <a href="/account"><i class="fas fa-cog"></i> Paramètres</a>
+        <a onclick="removeSession(0)"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
     </div>
 
     <div id="overlay"></div> 
-
-    <div id="searchBar"> <!-- Barre de recherche -->
-        <input type="text" id="searchInput" placeholder="Rechercher une station..."/> 
-    </div>
 
     <div id="errorPopup"> <!--  Pop up erreur -->
         <p id="errorMessage"></p> 
@@ -88,7 +115,6 @@ if (!isset($_SESSION['email'])) {
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script> <!-- Ajout du script du geocodeur -->
-
 
     <script>
 var storedId;
@@ -679,8 +705,8 @@ function showServerError(erreur) {
 
 let timeoutId2;
 
-function removeSession() {
-  fetch("controller/LogController.php", {
+function removeSession(time) {
+  fetch("requete/log", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -691,11 +717,15 @@ function removeSession() {
       if (!response.ok) {
         console.error("Erreur lors de la suppression de la session");
       }
+      console.log("Session supprimée avec succès");
     })
     .catch((error) => {
       console.log(error); // Affiche l'erreur s'il y en a
     });
-
+    if(time == 0){
+      
+      return;
+    }
   // Après avoir envoyé la requête pour détruire la session, on attend 4 secondes avant de rediriger
   if (timeoutId2 == null) {
     console.log("Session en cours de suppression...");
@@ -704,6 +734,24 @@ function removeSession() {
     }, 4010); // Attendre 4 secondes avant de rediriger
   }
 }
+
+function toggleMenu() {
+            var menu = document.getElementById("dropdownMenu");
+            if (menu.style.display === "block") {
+                menu.style.display = "none";
+            } else {
+                menu.style.display = "block";
+            }
+        }
+
+        // Fermer le menu si on clique ailleurs sur la page
+        document.addEventListener("click", function(event) {
+            var box = document.getElementById("leftBox");
+            var menu = document.getElementById("dropdownMenu");
+            if (!box.contains(event.target) && !menu.contains(event.target)) {
+                menu.style.display = "none";
+            }
+        });
 
     </script>
 </body>

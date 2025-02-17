@@ -14,25 +14,20 @@ html {
 }
 
 #searchBar {
-  display: flex; /* Utiliser flexbox pour centrer le champ */
-  justify-content: center; /* Centrer horizontalement */
-  align-items: center; /* Centrer verticalement */
-  padding: 10px; /* Espacement autour du champ */
-  pointer-events: none;
-  position: fixed; /* Position fixe en haut */
-  top: 0; /* Aligné en haut */
-  left: 0; /* Aligné à gauche */
-  width: 100%; /* Prendre toute la largeur de la page */
-  z-index: 1000; /* Assurer qu'elle soit au-dessus de la carte */
-  margin: 20px 0; /* Ajoute un espacement de 20px entre le texte et la bordure */
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
 }
 
 #searchInput {
-  padding: 10px; /* Espacement interne */
-  width: 300px; /* Largeur de la barre de recherche */
-  border: 1px solid #ccc; /* Bordure */
-  border-radius: 4px; /* Coins arrondis */
-  font-size: 16px; /* Taille de la police */
+  display: block;
+  margin: 0 auto; /* Centre horizontalement */
+  padding: 8px;
+  width: 40%;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+  text-align: center;
   pointer-events: auto;
 }
 #popup {
@@ -198,42 +193,40 @@ button.disabled {
 }
 
 #topRightSquare {
-  width: 30px; /* Largeur du carré */
-  height: 30px; /* Hauteur du carré */
-  background-color: white; /* Couleur du carré */
-  position: fixed; /* Positionnement fixe pour qu'il reste en haut à droite même en défilant */
-  top: 12px; /* Aligné en haut */
-  right: 10px; /* Éloigné de 10px du côté droit */
-  z-index: 1001; /* S'assurer qu'il soit au-dessus du reste */
-  border: 2px solid rgba(0, 0, 0, 0.366); /* Bordure noire pour mieux délimiter */
-  margin: 21px 0; /* Espacement en haut et en bas */
-  display: flex; /* Utilisation de Flexbox */
-  align-items: center; /* Centrer verticalement */
-  justify-content: center; /* Centrer horizontalement */
-  touch-action: none;
+  width: 45px; /* Augmentation de la taille */
+  height: 45px;
+  background-color: white; /* Fond blanc épuré */
+  position: fixed;
+  top: 15px;
+  right: 10px;
+  z-index: 1001;
+  border-radius: 50%; /* 🔵 Rendre la boîte totalement ronde */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); /* 🌟 Ajout d'une ombre légère */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease-in-out; /* 🌀 Animation fluide */
+  cursor: pointer; /* 🖱️ Indiquer que c'est cliquable */
+  border: none; /* Suppression de la bordure brute */
+  pointer-events: auto; /* Activer les événements de pointeur */
 }
 
-@media (max-width: 600px) {
-  #topRightSquare {
-    width: 20vw; /* Largeur de 20% de la largeur de la fenêtre */
-    height: 20vw; /* Hauteur égale à la largeur pour garder la forme carrée */
-    max-width: 28px; /* Limite maximale pour éviter que le carré devienne trop grand */
-    max-height: 28px; /* Limite maximale pour éviter que le carré devienne trop grand */
-    right: 10px; /* Garder un espacement de 10px du côté droit */
-    margin: 0; /* Supprimer la marge pour un bon ajustement */
-    top: 29px;
-  }
+/* ✅ Ajout d'un effet au survol */
+#topRightSquare:hover {
+  background-color: #f1f1f1; /* 🔄 Changement de couleur au survol */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12); /* Accentuation de l'ombre */
+  transform: scale(1.1); /* 🌀 Légère augmentation de la taille */
+}
 
-  #searchBar {
-    width: 100%; /* Adapter la largeur de la barre de recherche */
-    padding: 5px; /* Réduire le padding pour un meilleur ajustement */
-  }
+/* ✅ Style de l'image à l'intérieur */
+#topRightSquare img {
+  width: 60%; /* Ajustement automatique à la boîte */
+  height: auto;
+  border-radius: 50%; /* Arrondi pour l'image */
+}
 
-  /* Styles pour la carte et les boutons de zoom */
-  .leaflet-control-zoom {
-    transform: scale(0.8); /* Réduire la taille des boutons de zoom */
-    transition: transform 0.2s; /* Transition pour une réduction en douceur */
-  }
+.leaflet-control-zoom {
+  display: none; /* Masquer les boutons de zoom */
 }
 
 #topRightSquare img {
@@ -331,4 +324,73 @@ label {
   100% {
     left: 100%;
   }
+}
+
+/* Style du box à gauche */
+#leftBox {
+  cursor: pointer;
+  font-size: 20px;
+  padding: 10px;
+  background-color: white; /* Fond blanc épuré */
+  border-radius: 8px; /* Arrondi léger */
+  pointer-events: auto;
+  position: fixed;
+  left: 15px; /* Garde sa position */
+  top: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); /* 🌟 Ombre douce */
+  transition: all 0.3s ease-in-out; /* 🎬 Animation fluide */
+  pointer-events: auto;
+}
+/* Cache le menu par défaut */
+#dropdownMenu {
+  display: none;
+  position: absolute;
+  top: 60px;
+  left: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 180px;
+  z-index: 1001;
+  pointer-events: auto;
+}
+/* Style des éléments du menu */
+#dropdownMenu a {
+  display: block;
+  padding: 10px;
+  color: #333;
+  text-decoration: none;
+  border-bottom: 1px solid #ddd;
+}
+#dropdownMenu a:last-child {
+  border-bottom: none;
+}
+#dropdownMenu a:hover {
+  background-color: #f1f1f1;
+}
+
+/* ✅ Effet au survol */
+#dropdownMenu a:hover {
+  background-color: #f1f1f1;
+  transform: translateX(5px); /* 🔄 Légère translation vers la droite */
+}
+
+/* ✅ Ajout d’un effet d’ombre et de légers coins arrondis au hover */
+#dropdownMenu a:hover {
+  background-color: #e9ecef; /* 🔵 Légère variation de couleur */
+  border-radius: 6px;
+}
+/* Style du header */
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  pointer-events: none;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  height: 60px;
+  z-index: 1001;
 }
