@@ -343,6 +343,7 @@ label {
 }
 /* Cache le menu par défaut */
 #dropdownMenu {
+  cursor: pointer;
   display: none;
   position: absolute;
   top: 60px;

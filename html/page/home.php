@@ -723,7 +723,7 @@ function removeSession(time) {
       console.log(error); // Affiche l'erreur s'il y en a
     });
     if(time == 0){
-      
+      window.location.href = "/login";
       return;
     }
   // Après avoir envoyé la requête pour détruire la session, on attend 4 secondes avant de rediriger
