@@ -1,12 +1,6 @@
 <?php
-
 session_start();
-
-$registered_error = isset($_SESSION['register_error']) && $_SESSION['register_error'] === true; // Vérifie si la session 'register' est définie et vraie
-
 ?>
-
-
 <!DOCTYPE html>
 <html lang="fr">
     <head>
@@ -21,7 +15,7 @@ $registered_error = isset($_SESSION['register_error']) && $_SESSION['register_er
         <div class="container mt-5">
             <h2 class="text-center">Inscription</h2>
             <?php
-            if ($registered_error) {
+            if (isset($_SESSION['register_error']) && $_SESSION['register_error'] === true) {
                
                 echo '<div class="alert alert-danger" role="alert">
                         Erreur :  Mail deja utiliser .

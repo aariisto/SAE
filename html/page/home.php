@@ -699,7 +699,7 @@ function removepopInfo() {
 function showServerError(erreur) {
   showErrorPopup(erreur.error, 4000);
   if (erreur.token) {
-    // removeSession()
+    removeSession();
   }
 }
 

@@ -1,13 +1,5 @@
 <?php
 session_start();
-
-$registered = isset($_SESSION['register']) && $_SESSION['register'] === true; // Vérifie si la session 'register' est définie et vraie
-$mail_error = isset($_SESSION['mail_error']) && $_SESSION['mail_error'] === true; // Vérifie si la session 'mail_error' est définie et vraie
-$psw_error = isset($_SESSION['psw_error']) && $_SESSION['psw_error'] === true; // Vérifie si la session 'psw_error' est définie et vraie
-
-
-
-
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -55,7 +47,7 @@ $psw_error = isset($_SESSION['psw_error']) && $_SESSION['psw_error'] === true; /
 
                     <!-- ✅ Alertes session -->
             <?php
-            session_start();
+            
             if (isset($_SESSION['register']) && $_SESSION['register'] === true) {
                 echo '<div class="alert alert-success" role="alert">
                         Inscription réussie ! Vous pouvez maintenant vous connecter.

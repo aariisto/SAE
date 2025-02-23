@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 require '/var/www/private/Model/Model.php';
 
 session_start();
@@ -9,10 +6,6 @@ session_start();
 
 // Connexion à la base de données
 $conn = Model::getModel();
-
-if ($conn->connect_error) {
-    die("Connection failed");
-}
 
 // Récupérer les données du formulaire
 
@@ -31,7 +24,6 @@ if ($result->num_rows > 0) {
     header('Location: /register');
     
 } else {
-    $_SESSION['register_error'] = false;
     
     // Insérer l'utilisateur dans la base de données
     $result = $conn->addUser($username,$email,$password);

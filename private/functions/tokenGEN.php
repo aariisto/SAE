@@ -13,10 +13,10 @@ function generateJWT($userId) {
 
     // Payload du token sans 'iss' et 'aud'
     $payload = [
-        'iat' => $issuedAt,               // Temps d'émission
-        'exp' => $expirationTime,         // Temps d'expiration
+        'iat' => $issuedAt,               // Temps d'émission 11:14
+        'exp' => $expirationTime,         // Temps d'expiration 12:14
         'data' => [
-            'userId' => $userId,          // ID de l'utilisateur
+            'userId' => $userId,          // ID de l'utilisateur 5
         ]
     ];
 

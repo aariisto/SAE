@@ -2,9 +2,10 @@ from flask import Flask, render_template, jsonify
 from flask_cors import CORS
 import requests
 import re
+
+
 app = Flask(__name__)
 CORS(app)
-
 
 
 @app.route('/stations', methods=['GET'])
@@ -68,7 +69,7 @@ def get_station_info(station_id):
             return jsonify(None)
     else:
         # Retourner une erreur si la requête a échoué
-        return jsonify({"error": f"Erreur lors de la requête: {response.status_code}"}), response.status_code
+        return jsonify({"error": f"Erreur lors de la requête: {response.status_code}"}), response.status_code 
 
 
 @app.route('/search_station/<string:name>', methods=['GET'])
