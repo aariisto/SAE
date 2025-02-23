@@ -50,24 +50,23 @@ if (!empty($response)) {
         // Si le résultat est positif (1), on change la couleur et le type d'icône
         if ($val["resultat"] === 1) {
             $couleurSearch = "bi bi-check-circle-fill me-2 text-success"; // Vert pour succès
-            $typeSearch = "bi bi-geo-alt-fill icon-large"; // Icône de localisation
+            $typeSearch = "bi bi-geo-alt-fill icon-large text-success"; // Icône de localisation
 
             // Si la recherche est vide donc il a chercher une station, utiliser la station et changer l'icône
-            if (!isset($val["recherche"])) {
+            if (empty($val["recherche"])) {
                 $val["recherche"] = $val["station"]; // Utilise le nom de la station car il a cherché une station
                 $typeSearch = "bi bi-bicycle icon-bike"; // Icône de vélo
             }
         }
 
         // Construit le contenu HTML de l'historique de recherche
-        $searchContent .= "
+        $searchContent = "
         <div class='card mb-3 historique-item'>
             <div class='card-body d-flex justify-content-between align-items-center'>
                 <div>
                     <h5 class='card-title'>
                         {$val['recherche']}
-                        <i class='{$couleurSearch}'></i>
-                        <i class='{$typeSearch}'></i>
+                        <i class='{$couleurSearch}'></i><i class='{$typeSearch}'></i>
                     </h5>
                     <p class='card-text'>Date de Recherche : {$val['created_at']}</p>
                 </div>
@@ -75,7 +74,7 @@ if (!empty($response)) {
                     Supprimer
                 </button>
             </div>
-        </div>";
+        </div>" . $searchContent;
     }
 
     // Ajouter un titre à l'historique des recherches

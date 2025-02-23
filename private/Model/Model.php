@@ -51,7 +51,7 @@ class Model {
      */
     public function postSearch($id, $search, $station_id, $resultat) {
         // Vérifier si l'ID de la station est égal à 0 pour déterminer la requête SQL appropriée
-        if ($station_id === 0) {
+        if ($station_id === null) {
             // Donc il a trouver une addresse valide
             $sql = "INSERT INTO recherches (client_id, recherche, resultat) VALUES (?, ?, ?)";
         } else {
@@ -73,7 +73,7 @@ class Model {
         }
 
         // Lier les paramètres à la requête préparée en fonction de l'ID de la station
-        if ($station_id === 0) {
+        if ($station_id ===  null ) {
             // si c'etait une addresse pas la peine de mettre l'id de la station
             $stmt->bind_param("isi", $id, $search, $resultat); // "i" pour entier, "s" pour chaîne
         } else {
@@ -89,7 +89,8 @@ class Model {
             throw new Exception(json_encode([
                 "error" => "Le serveur n'a pas pu traiter votre demande. Veuillez réessayer ultérieurement.",
                 "error_code" => "erreur code: 3_2",
-                "token" => false
+                "token" => false,
+                "e" => $e->getMessage()
             ]));
             exit();
         }

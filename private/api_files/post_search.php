@@ -51,7 +51,7 @@ $data = json_decode($response, true);
 
 // Vérifie si la réponse contient une erreur
 if (isset($data["error"])) {
-    $station_id = 0;
+    $station_id = null;
     $resultat = 0;
 } else {
     $station_id = $data["station_id"];

@@ -96,7 +96,7 @@ def search_station(name):
         # Retourner une erreur si la requête a échoué
         return jsonify({"error": "Erreur lors de la requête"}), response.status_code
     
-    """
+    
     # Préparer le nom pour la requête à l'API Google
     name_google = name.replace(' ', '+')
     api_key = "AIzaSyDUm17xB5A406D0Z81JeCEaPT7HiWK1Qe4"
@@ -123,7 +123,7 @@ def search_station(name):
     else:
         # Retourner une erreur si la requête a échoué
         return jsonify({"error": "Erreur lors de la requête"}), response.status_code
-    """
+
     
     # Retourner une erreur si aucune station n'est trouvée
     return jsonify({"error": "Station non trouvée"})
