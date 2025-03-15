@@ -1,5 +1,4 @@
 <?php
-ob_start();
 // Récupère l'URI de la requête
 $request = $_SERVER['REQUEST_URI'];
 
