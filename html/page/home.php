@@ -12,9 +12,10 @@ if (!isset($_SESSION['id'])  || !isset($_SESSION['token'])) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Carte des stations Vélib'</title>
+    <title>Vélib'</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="page/images/logo.png">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <!-- FontAwesome Icons -->
@@ -144,6 +145,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const lat1 = position.coords.latitude; // Stocker la latitude
         const lon1 = position.coords.longitude; // Stocker la longitude
 
+        map.setView([lat1, lon1], 16);
+
         // Créer et afficher l'icône sur la carte
         floatingMarker = L.marker([lat1, lon1], {
           icon: L.icon({
@@ -264,7 +267,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     "popupContentInfo"
                   ).innerHTML = `<p style="color:red">La station est en cours de déploiement.</p>`;
                   button.classList.add("disabled");
-                } else if (data.is_returning === 0) {
+                } else if (data.is_renting === 0) {
                   document.getElementById(
                     "popupContentInfo"
                   ).innerHTML = `<p style="color:red">Cette station ne peut pas louer de vélos actuellement.</p>`;
@@ -630,6 +633,7 @@ function submitSelection() {
     .then((response) => {
       // Si la réponse est OK, continuer à traiter les données
       if (!response.ok) {
+        console.log(response);
         return response.json().then((errorData) => {
           throw errorData;
         });

@@ -1,6 +1,7 @@
 <?php
+ob_start();
 // Récupère l'URI de la requête
-$request = $_SERVER['REQUEST_URI']; // bvfhddfihl
+$request = $_SERVER['REQUEST_URI'];
 
 // Routeur simple basé sur l'URI
 switch ($request) {
@@ -17,6 +18,7 @@ switch ($request) {
         include 'page/login.php';
         break;
     case '/register':
+        // ectt
         // Redirige vers la page register.php
         include 'page/register.php';
         break;

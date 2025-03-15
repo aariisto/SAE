@@ -47,6 +47,7 @@ if (!empty($response)) {
         } else {
             $veloIcon = "<i class='bi bi-exclamation-triangle text-danger' title='Erreur'></i>"; // Icône d'erreur
         }
+        // <button class='btn btn-success btn-sm remove-btn' confirmationID='{$item['confirmationID']}' onclick='showQR(this)'>Afficher le QR Code</button>
 
         // Génération du contenu de la réservation
         $reservationContent = "
@@ -56,7 +57,6 @@ if (!empty($response)) {
                         <h5 class='card-title'> {$item['station']} {$veloIcon}</h5>
                         <p class='card-text'>Date de Réservation : {$item['create_time']}</p>
                     </div>
-                    <button class='btn btn-success btn-sm remove-btn' confirmationID='{$item['confirmationID']}' onclick='showQR(this)'>Afficher le QR Code</button>
                 </div>
             </div>" . $reservationContent; // Ajouter la nouvelle réservation au début du contenu
     }
