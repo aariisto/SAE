@@ -20,8 +20,8 @@ if (!isset($_SESSION['id'])  || !isset($_SESSION['token'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" /> <!-- Ajout de la feuille de style du géocodeur -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/perliedman-leaflet-control-geocoder/3.1.0/Control.Geocoder.css" /> <!-- Ajout de la feuille de style du géocodeur -->
     <link rel="stylesheet" href="page/css/styles.css"> <!-- Lien vers le fichier CSS externe -->
     
 </head>
@@ -113,9 +113,9 @@ if (!isset($_SESSION['id'])  || !isset($_SESSION['token'])) {
 </div>
     
     
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script> <!-- Ajout du script du geocodeur -->
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/perliedman-leaflet-control-geocoder/3.1.0/Control.Geocoder.min.js"></script> <!-- Ajout du script du geocodeur -->
 
     <script>
 var storedId;

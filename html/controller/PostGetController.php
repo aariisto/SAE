@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Cette fonction gère les requêtes POST envoyées au contrôleur.
  * Elle vérifie que la requête est valide en s'assurant que :
